@@ -1,17 +1,4 @@
-"""
-Business Rules (Layer 2)
-========================
-
-Loads business definitions, metrics, and common gotchas.
-
-This layer provides the "tribal knowledge" that makes the difference
-between a query that technically runs and one that returns correct results.
-
-Contents:
-- Metric definitions (what "Race Win" means, how to calculate it)
-- Business rules (Constructors Championship started in 1958)
-- Common gotchas (position is TEXT in some tables, INTEGER in others)
-"""
+"""Load business definitions, metrics, and common gotchas."""
 
 import json
 from pathlib import Path
@@ -23,106 +10,63 @@ from da.paths import BUSINESS_DIR
 
 
 def load_business_rules(business_dir: Path | None = None) -> dict[str, list[Any]]:
-    """Load business definitions from JSON files.
-
-    Args:
-        business_dir: Directory containing business JSON files.
-                     Defaults to knowledge/business/
-
-    Returns:
-        Dictionary with metrics, business_rules, and common_gotchas.
-    """
+    """Load business definitions from JSON files."""
     if business_dir is None:
         business_dir = BUSINESS_DIR
 
-    business: dict[str, list[Any]] = {
-        "metrics": [],
-        "business_rules": [],
-        "common_gotchas": [],
-    }
+    business: dict[str, list[Any]] = {"metrics": [], "business_rules": [], "common_gotchas": []}
 
     if not business_dir.exists():
-        logger.warning(f"Business directory not found: {business_dir}")
         return business
 
     for filepath in sorted(business_dir.glob("*.json")):
         try:
             with open(filepath) as f:
                 data = json.load(f)
-
-            if "metrics" in data:
-                business["metrics"].extend(data["metrics"])
-            if "business_rules" in data:
-                business["business_rules"].extend(data["business_rules"])
-            if "common_gotchas" in data:
-                business["common_gotchas"].extend(data["common_gotchas"])
-
-        except json.JSONDecodeError as e:
-            logger.error(f"Invalid JSON in {filepath}: {e}")
-        except OSError as e:
-            logger.error(f"Failed to read {filepath}: {e}")
+            for key in business:
+                if key in data:
+                    business[key].extend(data[key])
+        except (json.JSONDecodeError, OSError) as e:
+            logger.error(f"Failed to load {filepath}: {e}")
 
     return business
 
 
 def build_business_context(business_dir: Path | None = None) -> str:
-    """Build business context string for system prompt.
-
-    Args:
-        business_dir: Directory containing business JSON files.
-
-    Returns:
-        Formatted string with metrics, rules, and gotchas.
-    """
+    """Build business context string for system prompt."""
     business = load_business_rules(business_dir)
     lines: list[str] = []
 
     # Metrics
-    metrics = business.get("metrics", [])
-    if metrics:
-        lines.append("## METRICS")
-        lines.append("")
-        for metric in metrics:
-            name = metric.get("name", "Unknown")
-            definition = metric.get("definition", "")
-            table = metric.get("table", "")
-            calculation = metric.get("calculation", "")
-
-            lines.append(f"**{name}**: {definition}")
-            if table:
-                lines.append(f"  - Table: `{table}`")
-            if calculation:
-                lines.append(f"  - Calculation: {calculation}")
+    if business["metrics"]:
+        lines.append("## METRICS\n")
+        for m in business["metrics"]:
+            lines.append(f"**{m.get('name', 'Unknown')}**: {m.get('definition', '')}")
+            if m.get("table"):
+                lines.append(f"  - Table: `{m['table']}`")
+            if m.get("calculation"):
+                lines.append(f"  - Calculation: {m['calculation']}")
             lines.append("")
 
     # Business rules
-    rules = business.get("business_rules", [])
-    if rules:
-        lines.append("## BUSINESS RULES")
-        lines.append("")
-        for rule in rules:
+    if business["business_rules"]:
+        lines.append("## BUSINESS RULES\n")
+        for rule in business["business_rules"]:
             lines.append(f"- {rule}")
         lines.append("")
 
-    # Common gotchas (most critical - emphasized)
-    gotchas = business.get("common_gotchas", [])
-    if gotchas:
-        lines.append("## COMMON GOTCHAS (READ CAREFULLY!)")
-        lines.append("")
-        for gotcha in gotchas:
-            issue = gotcha.get("issue", "Unknown issue")
-            tables = gotcha.get("tables_affected", [])
-            solution = gotcha.get("solution", "")
-
-            lines.append(f"**{issue}**")
-            if tables:
-                lines.append(f"  - Tables: {', '.join(tables)}")
-            if solution:
-                lines.append(f"  - Solution: {solution}")
+    # Common gotchas
+    if business["common_gotchas"]:
+        lines.append("## COMMON GOTCHAS\n")
+        for g in business["common_gotchas"]:
+            lines.append(f"**{g.get('issue', 'Unknown')}**")
+            if g.get("tables_affected"):
+                lines.append(f"  - Tables: {', '.join(g['tables_affected'])}")
+            if g.get("solution"):
+                lines.append(f"  - Solution: {g['solution']}")
             lines.append("")
 
     return "\n".join(lines)
 
 
-# Pre-built context for import convenience
 BUSINESS_CONTEXT = build_business_context()

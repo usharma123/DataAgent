@@ -2,20 +2,18 @@
 Data Agent
 ==========
 
-A self-learning data agent inspired by OpenAI's internal data agent.
+A self-learning data agent that provides insights, not just query results.
 
-Features:
-- 6 layers of context for grounded reasoning
-- LearningMachine for continuous improvement from corrections
-- Knowledge-based SQL generation (searches before generating)
-- Provides insights, not just raw data
+The agent uses TWO separate knowledge bases:
+1. Knowledge - Static, curated (table schemas, validated queries, business rules)
+2. Learnings - Dynamic, discovered (query fixes, corrections, type gotchas)
 
 The 6 Layers of Context:
 1. Table Metadata - knowledge/tables/
 2. Human Annotations - knowledge/business/
 3. Query Patterns - knowledge/queries/
-4. Institutional Knowledge - MCP connectors
-5. Memory - LearningMachine
+4. Institutional Knowledge - MCP connectors (optional)
+5. Learnings - Discovered patterns (separate knowledge base)
 6. Runtime Context - introspect_schema tool
 
 Usage:
@@ -24,11 +22,12 @@ Usage:
 See README.md for full documentation.
 """
 
-from da.agent import data_agent, data_agent_knowledge
+from da.agent import data_agent, data_agent_knowledge, data_agent_learnings
 
 __all__ = [
     "data_agent",
     "data_agent_knowledge",
+    "data_agent_learnings",
 ]
 
 __version__ = "1.0.0"

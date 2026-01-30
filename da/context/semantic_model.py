@@ -1,16 +1,4 @@
-"""
-Semantic Model (Layer 1)
-========================
-
-Builds table metadata context from knowledge files.
-
-This is the foundation of the agent's understanding of the database schema.
-Each table definition includes:
-- Table name and description
-- Column names, types, and descriptions
-- Data quality notes (critical for correct SQL generation)
-- Use cases and related tables
-"""
+"""Load table metadata for the system prompt."""
 
 import json
 from pathlib import Path
@@ -20,115 +8,59 @@ from agno.utils.log import logger
 
 from da.paths import TABLES_DIR
 
+MAX_QUALITY_NOTES = 5
+
 
 def load_table_metadata(tables_dir: Path | None = None) -> list[dict[str, Any]]:
-    """Load table metadata from JSON files.
-
-    Args:
-        tables_dir: Directory containing table JSON files.
-                   Defaults to knowledge/tables/
-
-    Returns:
-        List of table metadata dictionaries.
-    """
+    """Load table metadata from JSON files."""
     if tables_dir is None:
         tables_dir = TABLES_DIR
 
     tables: list[dict[str, Any]] = []
     if not tables_dir.exists():
-        logger.warning(f"Tables directory not found: {tables_dir}")
         return tables
 
     for filepath in sorted(tables_dir.glob("*.json")):
         try:
             with open(filepath) as f:
                 table = json.load(f)
-
             tables.append(
                 {
                     "table_name": table["table_name"],
                     "description": table.get("table_description", ""),
-                    "columns": table.get("table_columns", []),
                     "use_cases": table.get("use_cases", []),
-                    "data_quality_notes": table.get("data_quality_notes", []),
-                    "related_tables": table.get("related_tables", []),
+                    "data_quality_notes": table.get("data_quality_notes", [])[:MAX_QUALITY_NOTES],
                 }
             )
-        except json.JSONDecodeError as e:
-            logger.error(f"Invalid JSON in {filepath}: {e}")
-        except KeyError as e:
-            logger.error(f"Missing required field {e} in {filepath}")
-        except OSError as e:
-            logger.error(f"Failed to read {filepath}: {e}")
+        except (json.JSONDecodeError, KeyError, OSError) as e:
+            logger.error(f"Failed to load {filepath}: {e}")
 
     return tables
 
 
 def build_semantic_model(tables_dir: Path | None = None) -> dict[str, Any]:
-    """Build complete semantic model from table metadata.
-
-    Args:
-        tables_dir: Directory containing table JSON files.
-
-    Returns:
-        Semantic model dictionary with tables list.
-    """
+    """Build semantic model from table metadata."""
     return {"tables": load_table_metadata(tables_dir)}
 
 
 def format_semantic_model(model: dict[str, Any]) -> str:
-    """Format semantic model as human-readable text for system prompt.
-
-    The output is optimized for LLM consumption:
-    - Clear section headers
-    - Prominent data quality warnings
-    - Structured column information
-
-    Args:
-        model: Semantic model dictionary.
-
-    Returns:
-        Formatted string for system prompt.
-    """
+    """Format semantic model for system prompt."""
     lines: list[str] = []
 
     for table in model.get("tables", []):
-        table_name = table["table_name"]
-        description = table.get("description", "")
-
-        lines.append(f"### {table_name}")
-        if description:
-            lines.append(description)
-        lines.append("")
-
-        # Data quality notes (most important - put first)
-        quality_notes = table.get("data_quality_notes", [])
-        if quality_notes:
-            lines.append("**DATA QUALITY NOTES (CRITICAL):**")
-            for note in quality_notes:
+        lines.append(f"### {table['table_name']}")
+        if table.get("description"):
+            lines.append(table["description"])
+        if table.get("use_cases"):
+            lines.append(f"**Use cases:** {', '.join(table['use_cases'])}")
+        if table.get("data_quality_notes"):
+            lines.append("**Data quality:**")
+            for note in table["data_quality_notes"]:
                 lines.append(f"  - {note}")
-            lines.append("")
-
-        # Columns
-        columns = table.get("columns", [])
-        if columns:
-            lines.append("**Columns:**")
-            for col in columns:
-                col_name = col.get("name", "?")
-                col_type = col.get("type", "unknown")
-                col_desc = col.get("description", "")
-                lines.append(f"  - `{col_name}` ({col_type}): {col_desc}")
-            lines.append("")
-
-        # Use cases
-        use_cases = table.get("use_cases", [])
-        if use_cases:
-            lines.append("**Use cases:** " + ", ".join(use_cases))
-            lines.append("")
+        lines.append("")
 
     return "\n".join(lines)
 
 
-# Pre-built model for import convenience
 SEMANTIC_MODEL = build_semantic_model()
 SEMANTIC_MODEL_STR = format_semantic_model(SEMANTIC_MODEL)

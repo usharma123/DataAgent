@@ -1,118 +1,37 @@
 """
-Load F1 Data
-============
+Load F1 Data - Downloads F1 data (1950-2020) and loads into PostgreSQL.
 
-Downloads Formula 1 data (1950-2020) from S3 and loads it into PostgreSQL.
-
-Usage:
-    python -m da.scripts.load_data
+Usage: python -m da.scripts.load_data
 """
 
-import sys
 from io import StringIO
-from os import getenv
 
 import httpx
 import pandas as pd
 from sqlalchemy import create_engine
 
-# Data source - configurable via environment variable
-S3_URI = getenv("F1_DATA_URI", "https://agno-public.s3.amazonaws.com/f1")
+from db import db_url
 
-FILES_TO_TABLES = {
-    f"{S3_URI}/constructors_championship_1958_2020.csv": "constructors_championship",
-    f"{S3_URI}/drivers_championship_1950_2020.csv": "drivers_championship",
-    f"{S3_URI}/fastest_laps_1950_to_2020.csv": "fastest_laps",
-    f"{S3_URI}/race_results_1950_to_2020.csv": "race_results",
-    f"{S3_URI}/race_wins_1950_to_2020.csv": "race_wins",
+S3_URI = "https://agno-public.s3.amazonaws.com/f1"
+
+TABLES = {
+    "constructors_championship": f"{S3_URI}/constructors_championship_1958_2020.csv",
+    "drivers_championship": f"{S3_URI}/drivers_championship_1950_2020.csv",
+    "fastest_laps": f"{S3_URI}/fastest_laps_1950_to_2020.csv",
+    "race_results": f"{S3_URI}/race_results_1950_to_2020.csv",
+    "race_wins": f"{S3_URI}/race_wins_1950_to_2020.csv",
 }
 
-
-def get_db_url() -> str:
-    """Get database URL from configuration.
-
-    Raises:
-        ImportError: If db module is not available.
-    """
-    from db import db_url
-
-    return db_url
-
-
-def load_f1_data(verbose: bool = True) -> bool:
-    """Load F1 data from S3 into PostgreSQL.
-
-    Args:
-        verbose: Print progress messages.
-
-    Returns:
-        True if all tables loaded successfully, False otherwise.
-    """
-    db_url = get_db_url()
-    engine = create_engine(db_url)
-
-    success = True
-    total_rows = 0
-
-    for file_path, table_name in FILES_TO_TABLES.items():
-        try:
-            if verbose:
-                print(f"Downloading {table_name}...", end=" ", flush=True)
-
-            response = httpx.get(file_path, verify=False, timeout=30.0)
-            response.raise_for_status()
-
-            df = pd.read_csv(StringIO(response.text))
-            row_count = len(df)
-            total_rows += row_count
-
-            if verbose:
-                print(f"({row_count:,} rows)...", end=" ", flush=True)
-
-            df.to_sql(table_name, engine, if_exists="replace", index=False)
-
-            if verbose:
-                print("Done")
-
-        except httpx.HTTPStatusError as e:
-            if verbose:
-                print(f"FAILED: HTTP {e.response.status_code}")
-            success = False
-        except httpx.RequestError as e:
-            if verbose:
-                print(f"FAILED: Network error - {e}")
-            success = False
-        except pd.errors.ParserError as e:
-            if verbose:
-                print(f"FAILED: CSV parse error - {e}")
-            success = False
-
-    if verbose:
-        print()
-        if success:
-            print(f"All data loaded successfully! ({total_rows:,} total rows)")
-        else:
-            print("Some tables failed to load. Check errors above.")
-
-    return success
-
-
-def main() -> int:
-    """Main entry point."""
-    try:
-        db_url = get_db_url()
-    except ImportError:
-        print("ERROR: Database configuration not available.")
-        print("Make sure you're running from the project root with the db module accessible.")
-        return 1
-
-    print("Loading F1 data into PostgreSQL")
-    print(f"Database: {db_url.split('@')[1] if '@' in db_url else db_url}")
-    print()
-
-    success = load_f1_data(verbose=True)
-    return 0 if success else 1
-
-
 if __name__ == "__main__":
-    sys.exit(main())
+    engine = create_engine(db_url)
+    total = 0
+
+    for table, url in TABLES.items():
+        print(f"Loading {table}...", end=" ", flush=True)
+        response = httpx.get(url, timeout=30.0)
+        df = pd.read_csv(StringIO(response.text))
+        df.to_sql(table, engine, if_exists="replace", index=False)
+        print(f"{len(df):,} rows")
+        total += len(df)
+
+    print(f"\nDone! {total:,} total rows")

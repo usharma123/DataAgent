@@ -1,34 +1,9 @@
 """
-Data Agent Evaluation Suite
-===========================
+Data Agent Evaluation Suite.
 
-Test cases and evaluation runner for validating agent performance.
-
-Usage:
-    # Run all tests
-    python -m da.evals.run_evals
-
-    # Run by category
-    python -m da.evals.run_evals --category basic
-
-    # Show statistics
-    python -m da.evals.run_evals --stats
+Usage: python -m da.evals.run_evals
 """
 
-from da.evals.test_cases import (
-    CATEGORIES,
-    DIFFICULTIES,
-    TEST_CASES,
-    TestCase,
-    get_test_cases,
-    get_test_stats,
-)
+from da.evals.test_cases import CATEGORIES, TEST_CASES
 
-__all__ = [
-    "TEST_CASES",
-    "TestCase",
-    "CATEGORIES",
-    "DIFFICULTIES",
-    "get_test_cases",
-    "get_test_stats",
-]
+__all__ = ["TEST_CASES", "CATEGORIES"]
