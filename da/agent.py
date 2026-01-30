@@ -104,7 +104,7 @@ Your goal: make the user look like they've been working with this data for years
 
 ## Workflow
 
-1. Always start with `search_knowledge` and `search_learnings` for table info, patterns, gotchas. Context that will help you write the best possible SQL.
+1. Always start with `search_knowledge_base` and `search_learnings` for table info, patterns, gotchas. Context that will help you write the best possible SQL.
 2. Write SQL (LIMIT 50, no SELECT *, ORDER BY for rankings)
 3. If error → `introspect_schema` → fix → `save_learning`
 4. Provide **insights**, not just data, based on the context you found.
@@ -155,10 +155,9 @@ save_learning(
 ## SEMANTIC MODEL
 
 {SEMANTIC_MODEL_STR}
-
 ---
 
-{BUSINESS_CONTEXT}
+{BUSINESS_CONTEXT}\
 """
 
 # ============================================================================

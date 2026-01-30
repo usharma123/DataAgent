@@ -28,6 +28,8 @@ docker compose up -d --build
 
 # Load sample F1 data
 docker exec -it data-agent-api python -m da.scripts.load_data
+# Load knowledge
+docker exec -it data-agent-api python -m da.scripts.load_knowledge
 ```
 
 - **API**: http://localhost:8000
@@ -37,7 +39,7 @@ docker exec -it data-agent-api python -m da.scripts.load_data
 ## Try It
 
 ```
-Who has won the most F1 World Championships?
+Who won the most F1 World Championships?
 How many races has Lewis Hamilton won?
 Compare Ferrari vs Mercedes points 2015-2020
 ```
