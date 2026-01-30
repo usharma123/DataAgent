@@ -1,8 +1,6 @@
 # Self-Learning Data Agent
 
-A self-learning data agent that provides **insights**, not just query results.
-
-Inspired by [OpenAI's internal data agent](https://openai.com/index/how-openai-built-its-data-agent/) that serves 3.5k users across 600 PB of data.
+A self-learning data agent inspired by [OpenAI's internal data agent](https://openai.com/index/how-openai-built-its-data-agent/) that serves 3.5k users across 600 PB of data.
 
 [What is AgentOS?](https://docs.agno.com/agent-os/introduction) · [Agno Docs](https://docs.agno.com) · [Discord](https://agno.com/discord)
 
