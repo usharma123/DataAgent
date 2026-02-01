@@ -1,7 +1,7 @@
 """
 Load F1 Data - Downloads F1 data (1950-2020) and loads into PostgreSQL.
 
-Usage: python -m da.scripts.load_data
+Usage: python -m dash.scripts.load_data
 """
 
 from io import StringIO

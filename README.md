@@ -1,46 +1,86 @@
 # Dash
 
-A self-learning data agent inspired by [OpenAI's in-house data agent](https://openai.com/index/inside-our-in-house-data-agent/).
+Dash is a **self-learning data agent** that delivers **insights, not just SQL results**.
 
-## Why Text-to-SQL Fails
+Instead of guessing queries from scratch, Dash grounds SQL generation in **six layers of context** and improves automatically with every run.
 
-Raw LLMs writing SQL hit a wall fast. They hallucinate column names, miss type quirks, and ignore the tribal knowledge that makes queries actually work. The problem isn't model capability, it's missing context.
+Inspired by [OpenAI's in-house data agent](https://openai.com/index/inside-our-in-house-data-agent/).
 
-Dash solves this with **6 layers of grounded context** and a **self-learning knowledge loop**.
+## Why Text-to-SQL Breaks in Practice
 
-## The 6 Layers
+The dream is simple: ask a question in english, get a correct, meaningful answer. But raw LLMs writing SQL hit a wall fast:
 
-| Layer | What It Provides | Source |
-|-------|------------------|--------|
-| **Table Metadata** | Schema, columns, relationships | `knowledge/tables/*.json` |
-| **Business Rules** | Metric definitions, gotchas | `knowledge/business/*.json` |
-| **Query Patterns** | Validated SQL that works | `knowledge/queries/*.sql` |
-| **Institutional Knowledge** | External docs, wikis | MCP (optional) |
-| **Memory** | Patterns discovered through errors | Agno's `LearningMachine` |
-| **Runtime Context** | Live schema when things change | `introspect_schema` tool |
+- **Schemas lack meaning.** A column named `status` does not explain valid values or business semantics.
+- **Types are misleading.** The same concept might be INTEGER in one table and TEXT in another.
+- **Business logic is tribal.** Revenue definitions, exclusions, test filters, and unit conversions rarely live in the schema.
+- **Mistakes repeat forever.** Stateless agents relearn the same errors every session.
+- **Results lack interpretation.** Returning `Hamilton: 11` is not an answer without context.
+
+The root cause is missing context and missing memory.
+
+Dash solves this with **6 layers of grounded context**, a **self-learning loop** that improves with every query, and a focus on **understanding your question** to deliver insights you can act on.
+
+## The Six Layers of Context
+
+| Layer | Purpose | Source |
+|------|--------|--------|
+| **Table Usage** | Schema, columns, relationships | `knowledge/tables/*.json` |
+| **Business Rules** | Metrics, definitions, and gotchas | `knowledge/business/*.json` |
+| **Query Patterns** | SQL that is known to work | `knowledge/queries/*.sql` |
+| **Institutional Knowledge** | Docs, wikis, external references | MCP (optional) |
+| **Learnings** | Error patterns and discovered fixes | Agno `Learning Machine` |
+| **Runtime Context** | Live schema changes | `introspect_schema` tool |
 
 The agent retrieves relevant context at query time via hybrid search, then generates SQL grounded in patterns that already work.
 
-## Self-Improving Loop
+## The Self-Learning Loop
+
+Dash improves without retraining or fine-tuning.
+
+It learns through two complementary systems:
+
+| System | Stores | How It Evolves |
+|------|--------|----------------|
+| **Knowledge** | Validated queries and business context | Curated by you + dash |
+| **Learnings** | Error patterns and fixes | Managed by `Learning Machine` automatically |
 
 ```
 User Question
      ↓
-Retrieve Context (schemas, patterns, gotchas)
+Retrieve Knowledge + Learnings
      ↓
-Generate SQL (grounded in working examples)
+Reason about intent
      ↓
-Execute & Analyze
+Generate grounded SQL
      ↓
- ┌───┴───┐
- ↓       ↓
-Success  Error
- ↓       ↓
-Offer    Learn
-to save  from it
+Execute and interpret
+     ↓
+ ┌────┴────┐
+ ↓         ↓
+Success    Error
+ ↓         ↓
+ ↓         Diagnose → Fix → Save Learning
+ ↓                           (never repeated)
+ ↓
+Return insight
+ ↓
+Optionally save as Knowledge
 ```
 
-When a query fails, the agent introspects the schema, fixes the issue, and saves the learning. Next time, it won't make the same mistake. No model retraining—just better retrieval knowledge.
+**Knowledge** is curated—validated queries and business context you want the agent to build on.
+
+**Learnings** is discovered—patterns the agent finds through trial and error. When a query fails because `position` is TEXT not INTEGER, the agent saves that gotcha. Next time, it knows.
+
+## Insights, Not Just Rows
+
+**Question:**
+Who won the most races in 2019?
+
+| Typical SQL Agent | Dash |
+|------------------|------|
+| `Hamilton: 11` | Lewis Hamilton dominated 2019 with **11 wins out of 21 races**, more than double Bottas’s 4 wins. This performance secured his sixth world championship. |
+
+Dash reasons about what makes an answer useful, not just technically correct.
 
 ## Quick Start
 
@@ -57,10 +97,10 @@ docker exec -it dash-api python -m dash.scripts.load_knowledge
 | Endpoint | URL |
 |----------|-----|
 | API | http://localhost:8000 |
-| Docs | http://localhost:8000/docs |
-| Control Plane | [os.agno.com](https://os.agno.com) → Add OS → Local → `http://localhost:8000` |
+| Web UI | [os.agno.com](https://os.agno.com) → Add OS → Local → `http://localhost:8000` |
 
 **Try it** (sample F1 dataset):
+
 ```
 Who won the most F1 World Championships?
 How many races has Lewis Hamilton won?
@@ -69,41 +109,38 @@ Compare Ferrari vs Mercedes points 2015-2020
 
 ## Adding Knowledge
 
-The knowledge base stores what makes your data unique, the context an LLM can't infer from schema alone.
+Dash works best when it understands how your organization talks about data.
 
 ```
 knowledge/
-├── tables/      # What each table contains
-├── queries/     # SQL patterns that work
-└── business/    # How your org talks about data
+├── tables/      # Table meaning and caveats
+├── queries/     # Proven SQL patterns
+└── business/    # Metrics and language
 ```
 
 ### Table Metadata
 
-Describe tables beyond what's in the schema:
-
-```json
+```
 {
   "table_name": "orders",
-  "table_description": "Customer orders with line items denormalized",
+  "table_description": "Customer orders with denormalized line items",
   "use_cases": ["Revenue reporting", "Customer analytics"],
   "data_quality_notes": [
     "created_at is UTC",
-    "status can be: pending, completed, refunded",
-    "amount is in cents, not dollars"
+    "status values: pending, completed, refunded",
+    "amount stored in cents"
   ]
 }
 ```
 
 ### Query Patterns
 
-Validated SQL the agent can learn from:
-
-```sql
+```
 -- <query name>monthly_revenue</query name>
 -- <query description>
 -- Monthly revenue calculation.
--- Handles: cents to dollars, excludes refunds
+-- Converts cents to dollars.
+-- Excludes refunded orders.
 -- </query description>
 -- <query>
 SELECT
@@ -118,21 +155,24 @@ ORDER BY 1 DESC
 
 ### Business Rules
 
-Map organizational language to data:
-
-```json
+```
 {
   "metrics": [
-    {"name": "MRR", "definition": "Sum of active subscription amounts, excluding trials"},
-    {"name": "Churn", "definition": "Subscriptions cancelled / total subscriptions at period start"}
+    {
+      "name": "MRR",
+      "definition": "Sum of active subscriptions excluding trials"
+    }
   ],
   "common_gotchas": [
-    {"issue": "Revenue double-counting", "solution": "Use completed orders only, not pending"}
+    {
+      "issue": "Revenue double counting",
+      "solution": "Filter to completed orders only"
+    }
   ]
 }
 ```
 
-### Load It
+### Load Knowledge
 
 ```sh
 python -m dash.scripts.load_knowledge            # Upsert changes
@@ -151,7 +191,9 @@ python -m dash  # CLI mode
 ## Deploy
 
 ```sh
-railway login && ./scripts/railway_up.sh
+railway login
+
+./scripts/railway_up.sh
 ```
 
 ## Environment Variables
@@ -159,10 +201,10 @@ railway login && ./scripts/railway_up.sh
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `OPENAI_API_KEY` | Yes | OpenAI API key |
-| `EXA_API_KEY` | No | Web search for institutional knowledge |
+| `EXA_API_KEY` | No | Web search for external knowledge |
 | `DB_*` | No | Database config (defaults to localhost) |
 
-## Links
+## Further Reading
 
 - [OpenAI's In-House Data Agent](https://openai.com/index/inside-our-in-house-data-agent/) — the inspiration
 - [Self-Improving SQL Agent](https://www.ashpreetbedi.com/articles/sql-agent) — deep dive on an earlier architecture
