@@ -22,6 +22,15 @@ docker exec -it dash-api python -m dash.scripts.load_knowledge
 
 Confirm dash is running by navigation to [http://localhost:8000/docs](http://localhost:8000/docs).
 
+## Packaging Strategy
+
+Dash now supports both:
+
+- **Poetry** for Python dependency/package management (`pyproject.toml`)
+- **Docker** for a reproducible runtime/deployment container
+
+Use Poetry for local packaging and CLI workflows, and Docker/Compose for runtime parity.
+
 ## Connect to the Web UI
 
 1. Open [os.agno.com](https://os.agno.com) and login
@@ -226,8 +235,8 @@ python -m dash.scripts.load_knowledge --recreate # Fresh start
 ```sh
 ./scripts/venv_setup.sh && source .venv/bin/activate
 docker compose up -d dash-db
-python -m dash.scripts.load_data
-python -m dash  # CLI mode
+poetry run python -m dash.scripts.load_data
+poetry run python -m dash  # CLI mode
 ```
 
 ## Environment Variables
@@ -237,6 +246,89 @@ python -m dash  # CLI mode
 | `OPENAI_API_KEY` | Yes | OpenAI API key |
 | `EXA_API_KEY` | No | Web search for external knowledge |
 | `DB_*` | No | Database config (defaults to localhost) |
+| `DASH_ENGINE` | No | `agno` (default) or `native` |
+| `DASH_NATIVE_DB_URL` | No | Optional DB URL override for native runtime |
+| `DASH_PERSONAL_DB_URL` | No | Optional DB URL override for personal runtime |
+| `DASH_PERSONAL_VECTOR_DIM` | No | Local embedding vector dimension for personal retrieval |
+| `DASH_SQL_DEFAULT_LIMIT` | No | Default LIMIT applied when omitted |
+| `DASH_SQL_MAX_LIMIT` | No | Hard cap for requested LIMIT |
+| `DASH_SQL_TIMEOUT_MS` | No | Statement timeout for SQL execution |
+| `DASH_MAX_SQL_ATTEMPTS` | No | Max SQL attempts allowed per ask request |
+
+## Native API Contracts (Step 6)
+
+The repository now exposes a non-Agno native API surface under:
+
+`/native/v1`
+
+Current endpoints:
+
+- `GET /native/v1/health`
+- `POST /native/v1/ask`
+- `POST /native/v1/feedback`
+- `POST /native/v1/save-query`
+- `POST /native/v1/evals/run`
+
+Current native scope:
+
+- Contract + guardrail enforcement
+- Local knowledge retrieval + SQL drafting from known query patterns
+- Safe SQL execution with timeout and normalized LIMIT policy
+- Multi-attempt behavior (drafted query, then safe fallback query if needed)
+- Insight synthesis + row payloads in `POST /native/v1/ask`
+- Persistent run telemetry tables:
+  - `query_runs`
+  - `sql_attempts`
+  - `feedback_events`
+  - `learning_candidates`
+  - `validated_queries`
+  - `eval_runs`
+- Feedback ingestion and automatic learning candidate creation
+- Validated query persistence via `POST /native/v1/save-query`
+- Native eval execution and persisted run summary via `POST /native/v1/evals/run`
+
+To boot only native routes (without AgentOS), set:
+
+```sh
+export DASH_ENGINE=native
+```
+
+Optional: use a different DB URL for native mode.
+
+```sh
+export DASH_NATIVE_DB_URL=sqlite+pysqlite:///./native_dash.db
+```
+
+## Personal Data Agent API (Memory + Citations)
+
+The repository now also exposes personal-data endpoints under:
+
+`/native/v1/personal`
+
+Current endpoints:
+
+- `POST /native/v1/personal/ask`
+- `GET /native/v1/personal/sources/status`
+- `POST /native/v1/personal/sources/{source}/connect`
+- `POST /native/v1/personal/sources/{source}/sync`
+- `POST /native/v1/personal/files/allowlist`
+- `GET /native/v1/personal/citations/{citation_id}`
+- `POST /native/v1/personal/feedback`
+- `GET /native/v1/personal/memory/candidates`
+- `POST /native/v1/personal/memory/candidates/{id}/approve`
+- `POST /native/v1/personal/memory/candidates/{id}/reject`
+- `GET /native/v1/personal/memory/active`
+- `POST /native/v1/personal/memory/{id}/deprecate`
+- `GET /native/v1/personal/evals/memory`
+
+Default personal runtime database:
+
+```sh
+export DASH_PERSONAL_DB_URL=sqlite+pysqlite:///./personal_dash.db
+```
+
+Personal retrieval embeddings are generated and stored locally in SQLite (`personal_chunks.embedding_json`),
+with hybrid lexical + vector ranking at query time.
 
 ## Further Reading
 
