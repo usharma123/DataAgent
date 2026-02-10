@@ -40,8 +40,8 @@ if [[ -n "$VIRTUAL_ENV" ]]; then
     exit 1
 fi
 
-if ! command -v uv &> /dev/null; then
-    echo "    uv not found. Install: https://docs.astral.sh/uv/"
+if ! command -v poetry &> /dev/null; then
+    echo "    poetry not found. Install: https://python-poetry.org/docs/"
     exit 1
 fi
 
@@ -51,19 +51,14 @@ echo -e "    ${DIM}> rm -rf ${VENV_DIR}${NC}"
 rm -rf ${VENV_DIR}
 
 echo ""
-echo -e "    ${DIM}Creating Python 3.12 venv...${NC}"
-echo -e "    ${DIM}> uv venv ${VENV_DIR} --python 3.12${NC}"
-uv venv ${VENV_DIR} --python 3.12 --quiet
+echo -e "    ${DIM}Creating Poetry environment with Python 3.12...${NC}"
+echo -e "    ${DIM}> POETRY_VIRTUALENVS_IN_PROJECT=true poetry env use 3.12${NC}"
+(cd "${REPO_ROOT}" && POETRY_VIRTUALENVS_IN_PROJECT=true poetry env use 3.12 >/dev/null)
 
 echo ""
-echo -e "    ${DIM}Installing requirements...${NC}"
-echo -e "    ${DIM}> uv pip install -r requirements.txt --no-cache${NC}"
-VIRTUAL_ENV=${VENV_DIR} uv pip install -r ${REPO_ROOT}/requirements.txt --no-cache --quiet
-
-echo ""
-echo -e "    ${DIM}Installing project in editable mode with dev dependencies...${NC}"
-echo -e "    ${DIM}> uv pip install -e .[dev]${NC}"
-VIRTUAL_ENV=${VENV_DIR} uv pip install -e ${REPO_ROOT}[dev] --quiet
+echo -e "    ${DIM}Installing project with dev dependencies...${NC}"
+echo -e "    ${DIM}> POETRY_VIRTUALENVS_IN_PROJECT=true poetry install --with dev${NC}"
+(cd "${REPO_ROOT}" && POETRY_VIRTUALENVS_IN_PROJECT=true poetry install --with dev --no-interaction --sync >/dev/null)
 
 # Copy activation command to clipboard
 ACTIVATE_CMD="source .venv/bin/activate"

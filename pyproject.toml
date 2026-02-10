@@ -8,30 +8,38 @@ license-files = ["LICENSE"]
 authors = [{ name = "Agno", email = "hello@agno.com" }]
 
 dependencies = [
-  "agno-infra",
-  "agno",
-  "fastapi[standard]",
-  "httpx",
-  "mcp",
-  "openai",
-  "openinference-instrumentation-agno",
-  "opentelemetry-api",
-  "opentelemetry-sdk",
-  "pandas",
-  "pgvector",
-  "psycopg[binary]",
-  "sqlalchemy",
+  "agno-infra==1.0.7",
+  "agno==2.4.7",
+  "fastapi[standard]==0.128.0",
+  "httpx==0.28.1",
+  "mcp==1.26.0",
+  "openai==2.16.0",
+  "openinference-instrumentation-agno==0.1.27",
+  "opentelemetry-api==1.39.1",
+  "opentelemetry-sdk==1.39.1",
+  "pandas==3.0.0",
+  "pgvector==0.4.2",
+  "psycopg[binary]==3.3.2",
+  "sqlalchemy==2.0.46",
 ]
 
 [project.optional-dependencies]
-dev = ["mypy", "ruff"]
+dev = ["mypy>=1.18.2,<2", "ruff>=0.14.1,<0.15"]
+
+[tool.poetry]
+packages = [
+  { include = "dash" },
+  { include = "db" },
+  { include = "app" },
+]
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.18.2"
+ruff = "^0.14.1"
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools.packages.find]
-include = ["dash*", "db*", "app*"]
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 120

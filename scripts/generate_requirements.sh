@@ -25,18 +25,33 @@ echo ""
 echo -e "    ${ORANGE}▸${NC} ${BOLD}Generating requirements.txt${NC}"
 echo ""
 
-if [[ "$1" = "upgrade" ]]; then
-    echo -e "    ${DIM}Mode: upgrade${NC}"
-    echo -e "    ${DIM}> uv pip compile pyproject.toml --no-cache --upgrade -o requirements.txt${NC}"
+if command -v poetry &> /dev/null && poetry export --help >/dev/null 2>&1; then
+    if [[ "$1" = "upgrade" ]]; then
+        echo -e "    ${DIM}Mode: poetry upgrade${NC}"
+        echo -e "    ${DIM}> poetry update${NC}"
+        echo ""
+        (cd "${REPO_ROOT}" && poetry update)
+    else
+        echo -e "    ${DIM}Mode: poetry export${NC}"
+    fi
+
+    echo -e "    ${DIM}> poetry export -f requirements.txt --without-hashes -o requirements.txt${NC}"
     echo ""
-    UV_CUSTOM_COMPILE_COMMAND="./scripts/generate_requirements.sh upgrade" \
-        uv pip compile ${REPO_ROOT}/pyproject.toml --no-cache --upgrade -o ${REPO_ROOT}/requirements.txt
+    (cd "${REPO_ROOT}" && poetry export -f requirements.txt --without-hashes -o "${REPO_ROOT}/requirements.txt")
 else
-    echo -e "    ${DIM}Mode: standard${NC}"
-    echo -e "    ${DIM}> uv pip compile pyproject.toml --no-cache -o requirements.txt${NC}"
-    echo ""
-    UV_CUSTOM_COMPILE_COMMAND="./scripts/generate_requirements.sh" \
-        uv pip compile ${REPO_ROOT}/pyproject.toml --no-cache -o ${REPO_ROOT}/requirements.txt
+    if [[ "$1" = "upgrade" ]]; then
+        echo -e "    ${DIM}Mode: uv upgrade fallback${NC}"
+        echo -e "    ${DIM}> uv pip compile pyproject.toml --no-cache --upgrade -o requirements.txt${NC}"
+        echo ""
+        UV_CUSTOM_COMPILE_COMMAND="./scripts/generate_requirements.sh upgrade" \
+            uv pip compile ${REPO_ROOT}/pyproject.toml --no-cache --upgrade -o ${REPO_ROOT}/requirements.txt
+    else
+        echo -e "    ${DIM}Mode: uv standard fallback${NC}"
+        echo -e "    ${DIM}> uv pip compile pyproject.toml --no-cache -o requirements.txt${NC}"
+        echo ""
+        UV_CUSTOM_COMPILE_COMMAND="./scripts/generate_requirements.sh" \
+            uv pip compile ${REPO_ROOT}/pyproject.toml --no-cache -o ${REPO_ROOT}/requirements.txt
+    fi
 fi
 
 echo ""
