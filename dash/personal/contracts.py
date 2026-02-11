@@ -6,7 +6,6 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
-
 PersonalSource = Literal["gmail", "slack", "imessage", "files"]
 RunStatus = Literal["accepted", "success", "failed"]
 FeedbackVerdict = Literal["correct", "incorrect"]

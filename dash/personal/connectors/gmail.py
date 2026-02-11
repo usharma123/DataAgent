@@ -2,6 +2,9 @@
 
 import base64
 import hashlib
+import html
+import re
+from html.parser import HTMLParser
 from datetime import UTC, datetime
 from os import getenv
 
@@ -209,9 +212,66 @@ def _decode_base64(value: str) -> str:
         return ""
 
 
+class _HTMLTextExtractor(HTMLParser):
+    """Extract readable text from HTML, skipping script/style content."""
+
+    _BLOCK_TAGS = frozenset({
+        "p", "div", "br", "hr", "li", "tr",
+        "h1", "h2", "h3", "h4", "h5", "h6",
+        "blockquote", "pre", "section", "article",
+        "header", "footer", "nav", "aside",
+    })
+    _SKIP_TAGS = frozenset({"script", "style"})
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=False)
+        self._parts: list[str] = []
+        self._skip_depth = 0
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        tag_lower = tag.lower()
+        if tag_lower in self._SKIP_TAGS:
+            self._skip_depth += 1
+        if tag_lower in self._BLOCK_TAGS:
+            self._parts.append("\n")
+
+    def handle_endtag(self, tag: str) -> None:
+        tag_lower = tag.lower()
+        if tag_lower in self._SKIP_TAGS and self._skip_depth > 0:
+            self._skip_depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if self._skip_depth == 0:
+            self._parts.append(data)
+
+    def handle_entityref(self, name: str) -> None:
+        if self._skip_depth == 0:
+            self._parts.append(html.unescape(f"&{name};"))
+
+    def handle_charref(self, name: str) -> None:
+        if self._skip_depth == 0:
+            self._parts.append(html.unescape(f"&#{name};"))
+
+    def get_text(self) -> str:
+        raw = "".join(self._parts)
+        # Collapse runs of blank lines to a single newline, strip trailing whitespace per line
+        lines = [line.strip() for line in raw.splitlines()]
+        return "\n".join(line for i, line in enumerate(lines) if line or (i > 0 and lines[i - 1]))
+
+
+_TAG_RE = re.compile(r"<[^>]+>")
+
+
 def _strip_html(value: str) -> str:
-    cleaned = value.replace("<br>", "\n").replace("<br/>", "\n").replace("<br />", "\n")
-    return " ".join(_token for _token in cleaned.replace("<", " ").replace(">", " ").split())
+    """Convert HTML to readable plain text using stdlib HTMLParser."""
+    try:
+        parser = _HTMLTextExtractor()
+        parser.feed(value)
+        return parser.get_text()
+    except Exception:
+        # Fallback: regex tag removal for malformed HTML
+        text = _TAG_RE.sub(" ", value)
+        return html.unescape(" ".join(text.split()))
 
 
 def _read_positive_int(name: str, default: int) -> int:

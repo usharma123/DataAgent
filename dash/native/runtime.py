@@ -20,7 +20,7 @@ def _resolve_database_url(override: str | None = None) -> str:
         return override
     from db.url import db_url
 
-    return getenv("DASH_NATIVE_DB_URL", "").strip() or db_url
+    return getenv("VAULT_NATIVE_DB_URL", "").strip() or db_url
 
 
 def get_native_run_store(database_url: str | None = None) -> NativeRunStore:

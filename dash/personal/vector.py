@@ -14,7 +14,7 @@ class LocalVectorEncoder:
     """Deterministic local embedding encoder using hashing trick."""
 
     def __init__(self, dimensions: int | None = None):
-        self._dimensions = dimensions or _read_positive_int("DASH_PERSONAL_VECTOR_DIM", 256)
+        self._dimensions = dimensions or _read_positive_int("VAULT_PERSONAL_VECTOR_DIM", 256)
 
     @property
     def dimensions(self) -> int:

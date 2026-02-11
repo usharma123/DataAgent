@@ -1,4 +1,4 @@
-"""Native (non-Agno) API surface for Dash."""
+"""Native API surface for Vault."""
 
 from dash.native.router import native_router
 

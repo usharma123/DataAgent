@@ -1,4 +1,4 @@
-"""FastAPI router for native Dash contracts."""
+"""FastAPI router for native Vault contracts."""
 
 from fastapi import APIRouter, HTTPException, status
 

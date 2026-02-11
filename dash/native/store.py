@@ -1,4 +1,4 @@
-"""Persistence layer for native Dash runs."""
+"""Persistence layer for native Vault runs."""
 
 import json
 from datetime import UTC, datetime
@@ -17,7 +17,6 @@ from sqlalchemy import (
     select,
 )
 from sqlalchemy.exc import SQLAlchemyError
-
 
 metadata = MetaData()
 

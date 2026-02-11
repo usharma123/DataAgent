@@ -38,7 +38,7 @@ class PersonalSyncService:
     def _connector_for(self, source: str) -> BaseConnector:
         cursor = self._source_cursor(source)
         if source == "files":
-            return FilesConnector(store=self._store, encoder=self._encoder)
+            return FilesConnector(store=self._store, encoder=self._encoder, cursor=cursor)
         if source == "gmail":
             return GmailConnector(store=self._store, encoder=self._encoder, cursor=cursor)
         if source == "slack":

@@ -193,22 +193,39 @@ class PersonalOrchestrator:
             )
 
     def _compose_answer(self, *, question: str, citations: list[Citation], memory_used: list[dict]) -> str:
-        """Build an answer strictly from cited evidence."""
-        top = citations[: min(3, len(citations))]
-        evidence_lines = [f"[{idx}] {item.snippet}" for idx, item in enumerate(top, start=1)]
+        """Build an answer strictly from cited evidence, using LLM when available."""
+        top = citations[: min(5, len(citations))]
+        evidence_lines = [f"[{idx}] ({item.source}) {item.snippet}" for idx, item in enumerate(top, start=1)]
 
         memory_hint = ""
         if memory_used:
-            memory_hint = "\nApplied memory guidance: " + "; ".join(
+            memory_hint = "\nMemory guidance: " + "; ".join(
                 str(item["statement"]).split("\n")[0][:120] for item in memory_used[:2]
             )
 
-        return (
-            f"Answer for: {question}\n"
-            "Based only on the cited evidence:\n"
-            + "\n".join(evidence_lines)
-            + memory_hint
-        )
+        evidence_block = "\n".join(evidence_lines)
+
+        try:
+            from dash.llm import complete
+
+            system = (
+                "You answer questions using ONLY the cited evidence provided. "
+                "Reference citations as [1], [2], etc. Be concise (2-4 sentences). "
+                "If the evidence is insufficient, say so clearly. Never fabricate information."
+            )
+            user = (
+                f"Question: {question}\n\n"
+                f"Evidence:\n{evidence_block}"
+                f"{memory_hint}"
+            )
+            return complete(system=system, user=user, temperature=0.2, max_tokens=512)
+        except Exception:
+            return (
+                f"Answer for: {question}\n"
+                "Based only on the cited evidence:\n"
+                + evidence_block
+                + memory_hint
+            )
 
     def _missing_evidence_hints(self, payload: PersonalAskRequest) -> list[str]:
         hints = [

@@ -253,6 +253,23 @@ def feedback(payload: PersonalFeedbackRequest) -> PersonalFeedbackResponse:
     )
 
 
+@personal_router.get("/watcher/status")
+def watcher_status() -> dict:
+    """Check file watcher status."""
+    from dash.personal.watcher import _watcher
+
+    if _watcher is None:
+        return {"running": False, "message": "File watcher not started"}
+
+    pending_count = len(_watcher._pending)
+    roots = [str(r) for r in _watcher._resolve_watch_roots()]
+    return {
+        "running": _watcher._running,
+        "watched_directories": roots,
+        "pending_changes": pending_count,
+    }
+
+
 @personal_router.get("/evals/memory", response_model=MemoryEvalResponse)
 def eval_memory() -> MemoryEvalResponse:
     """Run memory efficacy snapshot evaluation."""

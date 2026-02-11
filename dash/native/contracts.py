@@ -1,11 +1,10 @@
-"""API contracts for the native Dash runtime."""
+"""API contracts for the native Vault runtime."""
 
 from datetime import UTC, datetime
 from typing import Any, Literal
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
-
 
 RunStatus = Literal["accepted", "success", "failed"]
 FeedbackVerdict = Literal["correct", "incorrect"]

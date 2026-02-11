@@ -33,6 +33,8 @@ def ingest_document(
     body_text: str,
 ) -> tuple[int, int]:
     """Normalize body text into chunks + vectors and upsert into local store."""
+    # PostgreSQL text fields cannot contain NUL (0x00) bytes
+    body_text = body_text.replace("\x00", "")
     chunks = chunk_text(body_text)
     vectors = [encoder.encode(chunk) for chunk in chunks]
 

@@ -1,4 +1,4 @@
-"""SQL guardrails for the native Dash runtime."""
+"""SQL guardrails for the native Vault runtime."""
 
 import re
 from dataclasses import dataclass
@@ -44,11 +44,11 @@ class SqlGuardrailConfig:
 def load_sql_guardrail_config() -> SqlGuardrailConfig:
     """Load SQL guardrail configuration from environment variables."""
     return SqlGuardrailConfig(
-        default_limit=_read_int("DASH_SQL_DEFAULT_LIMIT", 50),
-        max_limit=_read_int("DASH_SQL_MAX_LIMIT", 500),
-        max_sql_length=_read_int("DASH_SQL_MAX_LENGTH", 20_000),
-        statement_timeout_ms=_read_int("DASH_SQL_TIMEOUT_MS", 15_000),
-        max_sql_attempts=_read_int("DASH_MAX_SQL_ATTEMPTS", 3),
+        default_limit=_read_int("VAULT_SQL_DEFAULT_LIMIT", 50),
+        max_limit=_read_int("VAULT_SQL_MAX_LIMIT", 500),
+        max_sql_length=_read_int("VAULT_SQL_MAX_LENGTH", 20_000),
+        statement_timeout_ms=_read_int("VAULT_SQL_TIMEOUT_MS", 15_000),
+        max_sql_attempts=_read_int("VAULT_MAX_SQL_ATTEMPTS", 3),
     )
 
 

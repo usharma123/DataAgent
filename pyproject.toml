@@ -1,26 +1,27 @@
 [project]
-name = "dash"
-version = "1.0.0"
-description = "A self-learning data agent that provides insights, not just query results"
+name = "vault"
+version = "2.0.0"
+description = "A self-learning personal data agent — indexes your messages, emails, and files locally"
 requires-python = ">=3.12,<4"
 readme = "README.md"
 license-files = ["LICENSE"]
-authors = [{ name = "Agno", email = "hello@agno.com" }]
+authors = [{ name = "Utsav Sharma" }]
 
 dependencies = [
-  "agno-infra==1.0.7",
-  "agno==2.4.7",
+  "click==8.3.1",
+  "fastembed>=0.4.0",
   "fastapi[standard]==0.128.0",
   "httpx==0.28.1",
-  "mcp==1.26.0",
+  "litellm>=1.50.0",
   "openai==2.16.0",
-  "openinference-instrumentation-agno==0.1.27",
   "opentelemetry-api==1.39.1",
   "opentelemetry-sdk==1.39.1",
   "pandas==3.0.0",
   "pgvector==0.4.2",
   "psycopg[binary]==3.3.2",
+  "rich>=14.0.0",
   "sqlalchemy==2.0.46",
+  "watchdog>=6.0.0",
 ]
 
 [project.optional-dependencies]
@@ -56,7 +57,7 @@ plugins = ["pydantic.mypy"]
 exclude = [".venv*"]
 
 [[tool.mypy.overrides]]
-module = ["pgvector.*", "setuptools.*", "agno.*", "pandas.*", "httpx.*"]
+module = ["pgvector.*", "setuptools.*", "pandas.*", "httpx.*", "litellm.*", "fastembed.*"]
 ignore_missing_imports = true
 
 [tool.uv.pip]

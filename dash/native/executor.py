@@ -1,4 +1,4 @@
-"""Safe SQL execution for native Dash."""
+"""Safe SQL execution for native Vault."""
 
 from dataclasses import dataclass
 from datetime import date, datetime

@@ -2,25 +2,44 @@
 Database Session
 ================
 
-PostgreSQL database connection for AgentOS.
+Plain SQLAlchemy session factory.
 """
 
-from agno.db.postgres import PostgresDb
+from sqlalchemy import create_engine, text
+from sqlalchemy.engine import Engine
+from sqlalchemy.orm import Session, sessionmaker
 
 from db.url import db_url
 
-DB_ID = "dash-db"
+_engine: Engine | None = None
+_session_factory: sessionmaker[Session] | None = None
 
 
-def get_postgres_db(contents_table: str | None = None) -> PostgresDb:
-    """Create a PostgresDb instance.
+def get_engine(database_url: str | None = None) -> Engine:
+    """Return a process-wide SQLAlchemy engine (singleton for default URL)."""
+    if database_url is not None:
+        return create_engine(database_url, pool_pre_ping=True)
 
-    Args:
-        contents_table: Optional table name for storing knowledge contents.
+    global _engine
+    if _engine is None:
+        _engine = create_engine(db_url, pool_pre_ping=True)
+    return _engine
 
-    Returns:
-        Configured PostgresDb instance.
-    """
-    if contents_table is not None:
-        return PostgresDb(id=DB_ID, db_url=db_url, knowledge_table=contents_table)
-    return PostgresDb(id=DB_ID, db_url=db_url)
+
+def get_session(database_url: str | None = None) -> Session:
+    """Create a new SQLAlchemy session."""
+    if database_url is not None:
+        factory = sessionmaker(bind=get_engine(database_url))
+        return factory()
+
+    global _session_factory
+    if _session_factory is None:
+        _session_factory = sessionmaker(bind=get_engine())
+    return _session_factory()
+
+
+def ensure_pgvector_extension(database_url: str | None = None) -> None:
+    """Create the pgvector extension if it does not exist."""
+    engine = get_engine(database_url)
+    with engine.begin() as conn:
+        conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))

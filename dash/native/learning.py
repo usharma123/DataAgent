@@ -1,4 +1,4 @@
-"""Learning candidate generation for native Dash."""
+"""Learning candidate generation for native Vault."""
 
 from dataclasses import dataclass
 

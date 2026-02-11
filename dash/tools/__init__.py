@@ -1,9 +1,9 @@
-"""Dash Tools."""
+"""Vault Tools — runtime schema inspection and query saving."""
 
-from dash.tools.introspect import create_introspect_schema_tool
-from dash.tools.save_query import create_save_validated_query_tool
+from dash.tools.introspect import introspect_schema
+from dash.tools.save_query import save_validated_query
 
 __all__ = [
-    "create_introspect_schema_tool",
-    "create_save_validated_query_tool",
+    "introspect_schema",
+    "save_validated_query",
 ]

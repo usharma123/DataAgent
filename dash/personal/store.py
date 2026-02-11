@@ -25,7 +25,6 @@ from sqlalchemy import (
 )
 from sqlalchemy.exc import SQLAlchemyError
 
-
 personal_metadata = MetaData()
 
 sources = Table(

@@ -18,10 +18,11 @@ _memory_eval_runner: MemoryEvalRunner | None = None
 def _resolve_personal_db_url(override: str | None = None) -> str:
     if override:
         return override
-    explicit = getenv("DASH_PERSONAL_DB_URL", "").strip()
+    explicit = getenv("VAULT_PERSONAL_DB_URL", "").strip()
     if explicit:
         return explicit
-    return "sqlite+pysqlite:///./personal_dash.db"
+    from db.url import build_db_url
+    return build_db_url()
 
 
 def get_personal_store(database_url: str | None = None) -> PersonalStore:

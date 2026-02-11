@@ -1,16 +1,17 @@
 """
-Dash API
-========
+Vault API
+=========
 
-Deployment entry point for Dash.
+FastAPI entry point for the Vault data agent.
 
 Run:
     python -m app.main
+    uvicorn app.main:app --host 0.0.0.0 --port 8000
 """
 
+import logging
+from contextlib import asynccontextmanager
 from os import getenv
-from pathlib import Path
-from typing import Any
 
 import uvicorn
 from fastapi import FastAPI
@@ -18,33 +19,51 @@ from fastapi import FastAPI
 from dash.native import native_router
 from dash.personal import personal_router
 
-agent_os: Any | None = None
-engine = getenv("DASH_ENGINE", "agno").strip().lower()
+logger = logging.getLogger(__name__)
 
-if engine == "native":
-    app = FastAPI(title="Dash Native API")
-else:
-    from agno.os import AgentOS
 
-    from dash.agents import dash, dash_knowledge, reasoning_dash
-    from db import get_postgres_db
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Start background services on boot, clean up on shutdown."""
+    # Start file watcher
+    from dash.personal.runtime import get_personal_store
+    from dash.personal.watcher import start_file_watcher, stop_file_watcher
 
-    agent_os = AgentOS(
-        name="Dash",
-        tracing=True,
-        db=get_postgres_db(),
-        agents=[dash, reasoning_dash],
-        knowledge=[dash_knowledge],
-        config=str(Path(__file__).parent / "config.yaml"),
-    )
-    app = agent_os.get_app()
+    try:
+        store = get_personal_store()
+        start_file_watcher(store)
+        logger.info("File watcher started")
+    except Exception:
+        logger.warning("File watcher failed to start", exc_info=True)
+
+    yield
+
+    # Shutdown
+    stop_file_watcher()
+    logger.info("File watcher stopped")
+
+
+app = FastAPI(
+    title="Vault",
+    description="Self-learning personal data agent API",
+    version="2.0.0",
+    lifespan=lifespan,
+)
 
 app.include_router(native_router)
 app.include_router(personal_router)
 
+
+@app.get("/health")
+def health() -> dict[str, str]:
+    return {"status": "ok", "engine": "native"}
+
+
 if __name__ == "__main__":
     reload = getenv("RUNTIME_ENV", "prd") == "dev"
-    if agent_os is not None:
-        agent_os.serve(app="main:app", reload=reload)
-    else:
-        uvicorn.run("app.main:app", host="0.0.0.0", port=int(getenv("PORT", "8000")), reload=reload)
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=int(getenv("PORT", "8000")),
+        reload=reload,
+    )

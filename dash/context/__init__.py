@@ -1,4 +1,4 @@
-"""Context builders for Dash's system prompt."""
+"""Context builders for Vault's system prompt."""
 
 from dash.context.business_rules import BUSINESS_CONTEXT, build_business_context, load_business_rules
 from dash.context.semantic_model import (
