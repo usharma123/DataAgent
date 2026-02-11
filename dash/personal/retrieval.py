@@ -1,13 +1,16 @@
 """Hybrid retrieval helpers for personal data ask runs."""
 
 import json
+import logging
 import math
 import re
 from dataclasses import dataclass
 from datetime import datetime
 
-from dash.personal.store import PersonalStore
+from dash.personal.store import PersonalStore, PersonalStoreError
 from dash.personal.vector import LocalVectorEncoder, cosine_similarity
+
+logger = logging.getLogger(__name__)
 
 _TOKEN_RE = re.compile(r"[a-z0-9_]+")
 _STOP_WORDS = {
@@ -51,7 +54,7 @@ class RetrievedChunk:
 
 
 class PersonalRetriever:
-    """Simple hybrid retriever using lexical overlap and recency weighting."""
+    """Hybrid retriever using pgvector + full-text search with Python fallback."""
 
     def __init__(self, store: PersonalStore):
         self._store = store
@@ -66,7 +69,74 @@ class PersonalRetriever:
         time_to: datetime | None,
         top_k: int,
     ) -> list[RetrievedChunk]:
-        """Retrieve top chunks for a question."""
+        """Retrieve top chunks for a question.
+
+        Uses pgvector hybrid search when available, falls back to
+        Python-side lexical + cosine scoring for SQLite / non-pgvector DBs.
+        """
+        if self._store.has_pgvector:
+            try:
+                return self._pgvector_retrieve(
+                    question=question,
+                    source_filters=source_filters,
+                    time_from=time_from,
+                    time_to=time_to,
+                    top_k=top_k,
+                )
+            except PersonalStoreError:
+                logger.warning("pgvector search failed, falling back to Python scoring", exc_info=True)
+
+        return self._python_retrieve(
+            question=question,
+            source_filters=source_filters,
+            time_from=time_from,
+            time_to=time_to,
+            top_k=top_k,
+        )
+
+    def _pgvector_retrieve(
+        self,
+        *,
+        question: str,
+        source_filters: list[str],
+        time_from: datetime | None,
+        time_to: datetime | None,
+        top_k: int,
+    ) -> list[RetrievedChunk]:
+        """Retrieve using pgvector HNSW + tsvector GIN (database-level scoring)."""
+        query_embedding = self._encoder.encode(question)
+        rows = self._store.vector_search(
+            query_embedding=query_embedding,
+            query_text=question,
+            source_filters=source_filters,
+            time_from=time_from,
+            time_to=time_to,
+            top_k=top_k,
+        )
+        return [
+            RetrievedChunk(
+                chunk_id=str(row["chunk_id"]),
+                source=str(row["source"]),
+                text=str(row["text"]),
+                title=(str(row["title"]) if row.get("title") else None),
+                author=(str(row["author"]) if row.get("author") else None),
+                timestamp_utc=row.get("timestamp_utc"),
+                deep_link=(str(row["deep_link"]) if row.get("deep_link") else None),
+                score=float(row.get("score", 0.0)),
+            )
+            for row in rows
+        ]
+
+    def _python_retrieve(
+        self,
+        *,
+        question: str,
+        source_filters: list[str],
+        time_from: datetime | None,
+        time_to: datetime | None,
+        top_k: int,
+    ) -> list[RetrievedChunk]:
+        """Fallback: load chunks from DB, score in Python."""
         question_tokens = tokenize(question)
         if not question_tokens:
             return []

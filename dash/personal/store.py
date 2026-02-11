@@ -1,6 +1,7 @@
 """Persistence layer for personal data agent runtime."""
 
 import json
+import logging
 from datetime import UTC, datetime
 from typing import Any
 
@@ -22,8 +23,11 @@ from sqlalchemy import (
     func,
     insert,
     select,
+    text,
 )
 from sqlalchemy.exc import SQLAlchemyError
+
+logger = logging.getLogger(__name__)
 
 personal_metadata = MetaData()
 
@@ -193,6 +197,7 @@ class PersonalStore:
     def __init__(self, database_url: str):
         self._engine = create_engine(database_url, pool_pre_ping=True)
         self._schema_ready = False
+        self._has_pgvector = False
 
     def ensure_schema(self) -> None:
         """Create personal runtime tables if needed."""
@@ -201,9 +206,40 @@ class PersonalStore:
         try:
             personal_metadata.create_all(self._engine, checkfirst=True)
             self._seed_sources_if_missing()
+            self._setup_pgvector()
             self._schema_ready = True
         except SQLAlchemyError as exc:
             raise PersonalStoreError(f"Failed to create personal tables: {exc}") from exc
+
+    def _setup_pgvector(self) -> None:
+        """Add pgvector column and indexes if running on PostgreSQL."""
+        dialect = self._engine.dialect.name
+        if dialect != "postgresql":
+            return
+        try:
+            from dash.embedder import get_dimensions
+
+            dims = get_dimensions()
+            with self._engine.begin() as conn:
+                conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+                conn.execute(text(
+                    f"ALTER TABLE personal_chunks "
+                    f"ADD COLUMN IF NOT EXISTS embedding vector({dims})"
+                ))
+                conn.execute(text(
+                    "CREATE INDEX IF NOT EXISTS idx_personal_chunks_hnsw "
+                    "ON personal_chunks USING hnsw (embedding vector_cosine_ops)"
+                ))
+                conn.execute(text(
+                    "CREATE INDEX IF NOT EXISTS idx_personal_chunks_gin "
+                    "ON personal_chunks "
+                    "USING GIN (to_tsvector('english', text))"
+                ))
+            self._has_pgvector = True
+            logger.info("pgvector enabled for personal_chunks (dims=%d)", dims)
+        except Exception as exc:
+            logger.warning("pgvector setup skipped: %s", exc)
+            self._has_pgvector = False
 
     def _seed_sources_if_missing(self) -> None:
         expected = ["gmail", "slack", "imessage", "files"]
@@ -415,6 +451,118 @@ class PersonalStore:
 
         return created_docs, created_chunks
 
+    def bulk_upsert_documents(
+        self,
+        items: list[tuple[dict, list[str], list[list[float]]]],
+    ) -> tuple[int, int]:
+        """Bulk upsert documents + chunks in a single transaction.
+
+        Each item is (payload, chunk_texts, chunk_embeddings).
+        Returns (total_docs_created, total_chunks_created).
+        """
+        if not items:
+            return 0, 0
+        # Deduplicate by doc_id (keep last occurrence)
+        seen: dict[str, int] = {}
+        for idx, (payload, _, _) in enumerate(items):
+            seen[payload["doc_id"]] = idx
+        if len(seen) < len(items):
+            items = [items[i] for i in sorted(seen.values())]
+        self.ensure_schema()
+        now = datetime.now(UTC)
+        total_docs = 0
+        total_chunks = 0
+
+        try:
+            with self._engine.begin() as conn:
+                # 1. Fetch existing doc_ids in one query
+                all_doc_ids = [item[0]["doc_id"] for item in items]
+                existing_ids: set[str] = set()
+                for batch_start in range(0, len(all_doc_ids), 500):
+                    batch_ids = all_doc_ids[batch_start : batch_start + 500]
+                    rows = conn.execute(
+                        select(documents.c.doc_id).where(documents.c.doc_id.in_(batch_ids))
+                    ).fetchall()
+                    existing_ids.update(row[0] for row in rows)
+
+                # 2. Separate into inserts vs updates
+                doc_inserts: list[dict] = []
+                doc_updates: list[tuple[str, dict]] = []
+                for payload, _, _ in items:
+                    doc_payload = {
+                        "doc_id": payload["doc_id"],
+                        "source": payload["source"],
+                        "external_id": payload.get("external_id", payload["doc_id"]),
+                        "thread_id": payload.get("thread_id"),
+                        "account_id": payload.get("account_id"),
+                        "title": payload.get("title"),
+                        "body_text": payload.get("body_text", ""),
+                        "author": payload.get("author"),
+                        "participants_json": json.dumps(payload.get("participants", [])),
+                        "timestamp_utc": payload.get("timestamp_utc"),
+                        "deep_link": payload.get("deep_link"),
+                        "metadata_json": json.dumps(payload.get("metadata", {})),
+                        "checksum": payload.get("checksum"),
+                        "updated_at": now,
+                    }
+                    if payload["doc_id"] not in existing_ids:
+                        doc_payload["created_at"] = now
+                        doc_inserts.append(doc_payload)
+                        total_docs += 1
+                    else:
+                        doc_updates.append((payload["doc_id"], doc_payload))
+
+                # 3. Bulk INSERT new documents
+                if doc_inserts:
+                    conn.execute(insert(documents), doc_inserts)
+
+                # 4. Bulk UPDATE existing documents
+                for doc_id, vals in doc_updates:
+                    conn.execute(documents.update().where(documents.c.doc_id == doc_id).values(**vals))
+
+                # 5. Bulk DELETE old chunks
+                for batch_start in range(0, len(all_doc_ids), 500):
+                    batch_ids = all_doc_ids[batch_start : batch_start + 500]
+                    conn.execute(delete(chunks).where(chunks.c.doc_id.in_(batch_ids)))
+
+                # 6. Bulk INSERT new chunks
+                chunk_rows: list[dict] = []
+                for payload, chunk_texts, chunk_embeddings in items:
+                    embeddings = chunk_embeddings or []
+                    for index, text_value in enumerate(chunk_texts):
+                        embedding = embeddings[index] if index < len(embeddings) else None
+                        chunk_rows.append({
+                            "chunk_id": f"{payload['doc_id']}:{index}",
+                            "doc_id": payload["doc_id"],
+                            "source": payload["source"],
+                            "chunk_index": index,
+                            "text": text_value,
+                            "token_count": max(1, len(text_value.split())),
+                            "embedding_json": json.dumps(embedding) if embedding else None,
+                            "created_at": now,
+                        })
+                if chunk_rows:
+                    # Insert in batches of 1000 to avoid parameter limits
+                    for batch_start in range(0, len(chunk_rows), 1000):
+                        conn.execute(insert(chunks), chunk_rows[batch_start : batch_start + 1000])
+                    total_chunks = len(chunk_rows)
+
+                # 7. Populate pgvector embedding column from embedding_json
+                if self._has_pgvector and chunk_rows:
+                    chunk_ids = [row["chunk_id"] for row in chunk_rows if row.get("embedding_json")]
+                    for batch_start in range(0, len(chunk_ids), 500):
+                        batch_cids = chunk_ids[batch_start : batch_start + 500]
+                        conn.execute(text(
+                            "UPDATE personal_chunks "
+                            "SET embedding = embedding_json::vector "
+                            "WHERE chunk_id = ANY(:ids) AND embedding_json IS NOT NULL"
+                        ), {"ids": batch_cids})
+
+        except (SQLAlchemyError, KeyError, TypeError, ValueError) as exc:
+            raise PersonalStoreError(f"Failed to bulk upsert documents: {exc}") from exc
+
+        return total_docs, total_chunks
+
     def list_chunks(
         self,
         *,
@@ -459,6 +607,100 @@ class PersonalStore:
             return [dict(row) for row in rows]
         except SQLAlchemyError as exc:
             raise PersonalStoreError(f"Failed to list chunks: {exc}") from exc
+
+    @property
+    def has_pgvector(self) -> bool:
+        """Whether pgvector hybrid search is available."""
+        return self._has_pgvector
+
+    def vector_search(
+        self,
+        *,
+        query_embedding: list[float],
+        query_text: str,
+        source_filters: list[str],
+        time_from: datetime | None,
+        time_to: datetime | None,
+        top_k: int,
+    ) -> list[dict[str, Any]]:
+        """Hybrid pgvector + full-text search over personal_chunks.
+
+        Uses HNSW index for vector similarity and GIN index for full-text ranking.
+        Combines scores with RRF-style fusion. Only works on PostgreSQL with pgvector.
+        """
+        if not self._has_pgvector:
+            raise PersonalStoreError("pgvector not available")
+        self.ensure_schema()
+
+        embedding_literal = "[" + ",".join(str(v) for v in query_embedding) + "]"
+
+        where_clauses = ["c.embedding IS NOT NULL"]
+        params: dict[str, Any] = {
+            "query_text": query_text,
+            "top_k": top_k,
+        }
+
+        if source_filters:
+            where_clauses.append("c.source = ANY(:source_filters)")
+            params["source_filters"] = source_filters
+        if time_from is not None:
+            where_clauses.append("d.timestamp_utc >= :time_from")
+            params["time_from"] = time_from
+        if time_to is not None:
+            where_clauses.append("d.timestamp_utc <= :time_to")
+            params["time_to"] = time_to
+
+        where_sql = " AND ".join(where_clauses)
+
+        sql = f"""
+            SELECT
+                c.chunk_id,
+                c.doc_id,
+                c.source,
+                c.text,
+                c.chunk_index,
+                d.title,
+                d.author,
+                d.timestamp_utc,
+                d.deep_link,
+                c.embedding <=> '{embedding_literal}'::vector AS vector_dist,
+                ts_rank(
+                    to_tsvector('english', c.text),
+                    plainto_tsquery('english', :query_text)
+                ) AS ts_rank
+            FROM personal_chunks c
+            JOIN personal_documents d ON d.doc_id = c.doc_id
+            WHERE {where_sql}
+            ORDER BY
+                (c.embedding <=> '{embedding_literal}'::vector) - ts_rank ASC
+            LIMIT :top_k
+        """
+
+        try:
+            with self._engine.begin() as conn:
+                rows = conn.execute(text(sql), params).mappings().all()
+
+            results: list[dict[str, Any]] = []
+            for row in rows:
+                dist = float(row["vector_dist"]) if row["vector_dist"] is not None else 1.0
+                ts = float(row["ts_rank"]) if row["ts_rank"] is not None else 0.0
+                score = (1.0 / (1.0 + dist)) * 0.6 + ts * 0.4
+                results.append({
+                    "chunk_id": row["chunk_id"],
+                    "doc_id": row["doc_id"],
+                    "source": row["source"],
+                    "text": row["text"],
+                    "chunk_index": row["chunk_index"],
+                    "title": row["title"],
+                    "author": row["author"],
+                    "timestamp_utc": row["timestamp_utc"],
+                    "deep_link": row["deep_link"],
+                    "score": max(0.0, min(1.0, score)),
+                })
+            results.sort(key=lambda r: r["score"], reverse=True)
+            return results
+        except SQLAlchemyError as exc:
+            raise PersonalStoreError(f"Vector search failed: {exc}") from exc
 
     def save_citations(self, *, run_id: str, items: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Persist citations for a run and return citation payloads."""

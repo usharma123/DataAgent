@@ -1,13 +1,14 @@
 """iMessage connector using local Messages SQLite database."""
 
 import hashlib
+import re
 import sqlite3
 from datetime import UTC, datetime, timedelta
 from os import getenv
 from pathlib import Path
 
 from dash.personal.connectors.base import BaseConnector, SyncResult
-from dash.personal.ingest import ingest_document
+from dash.personal.ingest import bulk_ingest
 from dash.personal.store import PersonalStore, PersonalStoreError
 from dash.personal.vector import LocalVectorEncoder
 
@@ -32,6 +33,7 @@ class IMessageConnector(BaseConnector):
 
         last_rowid = 0 if full else int(self._cursor.get("last_rowid", 0) or 0)
         limit = _read_positive_int("IMESSAGE_SYNC_LIMIT", 300)
+        batch_size = _read_positive_int("IMESSAGE_BATCH_SIZE", 500)
 
         documents = 0
         chunks = 0
@@ -63,6 +65,7 @@ class IMessageConnector(BaseConnector):
                 (last_rowid, limit),
             ).fetchall()
 
+            batch: list[tuple[dict, str]] = []
             for row in rows:
                 rowid = int(row[0])
                 guid = str(row[1] or f"msg-{rowid}")
@@ -86,33 +89,42 @@ class IMessageConnector(BaseConnector):
                 timestamp = _apple_time_to_datetime(raw_date)
                 checksum = hashlib.sha256(body.encode("utf-8", errors="ignore")).hexdigest()
 
-                created_docs, created_chunks = ingest_document(
-                    store=self._store,
-                    encoder=self._encoder,
-                    payload={
-                        "doc_id": f"imessage:{rowid}",
-                        "source": self.source,
-                        "external_id": guid,
-                        "thread_id": chat_identifier or None,
-                        "account_id": service,
-                        "title": display_name or chat_identifier or "iMessage",
-                        "author": "me" if is_from_me else handle_id,
-                        "participants": [handle_id] if handle_id else [],
-                        "timestamp_utc": timestamp,
-                        "deep_link": f"imessage://message/{guid}",
-                        "metadata": {
-                            "guid": guid,
-                            "is_from_me": bool(is_from_me),
-                            "service": service,
-                            "attachments": attachments,
-                        },
-                        "checksum": checksum,
+                payload = {
+                    "doc_id": f"imessage:{rowid}",
+                    "source": self.source,
+                    "external_id": guid,
+                    "thread_id": chat_identifier or None,
+                    "account_id": service,
+                    "title": display_name or chat_identifier or "iMessage",
+                    "author": "me" if is_from_me else handle_id,
+                    "participants": [handle_id] if handle_id else [],
+                    "timestamp_utc": timestamp,
+                    "deep_link": f"imessage://message/{guid}",
+                    "metadata": {
+                        "guid": guid,
+                        "is_from_me": bool(is_from_me),
+                        "service": service,
+                        "attachments": attachments,
                     },
-                    body_text=body,
+                    "checksum": checksum,
+                }
+                batch.append((payload, body))
+                max_rowid = max(max_rowid, rowid)
+
+                if len(batch) >= batch_size:
+                    created_docs, created_chunks = bulk_ingest(
+                        store=self._store, encoder=self._encoder, items=batch,
+                    )
+                    documents += created_docs
+                    chunks += created_chunks
+                    batch = []
+
+            if batch:
+                created_docs, created_chunks = bulk_ingest(
+                    store=self._store, encoder=self._encoder, items=batch,
                 )
                 documents += created_docs
                 chunks += created_chunks
-                max_rowid = max(max_rowid, rowid)
 
         next_cursor = {**self._cursor, "last_rowid": max_rowid, "synced_at": datetime.now(UTC).isoformat()}
         return SyncResult(documents=documents, chunks=chunks, message="imessage sync completed", cursor=next_cursor)
@@ -162,13 +174,26 @@ def _apple_time_to_datetime(value: object) -> datetime:
 
 
 def _decode_attributed(blob: object) -> str:
+    """Extract plain text from NSAttributedString binary blob.
+
+    The blob is a macOS typedstream containing the message text between
+    a ``\\x01+<len>`` marker and a ``\\x86`` terminator.
+    """
     if blob is None:
         return ""
     if isinstance(blob, str):
         return blob.strip()
     if not isinstance(blob, (bytes, bytearray)):
         return ""
-    text = bytes(blob).decode("utf-8", errors="ignore")
+    raw = bytes(blob)
+    match = re.search(rb"\x01\+.(.*?)\x86", raw, re.DOTALL)
+    if match:
+        text = match.group(1).decode("utf-8", errors="replace").strip()
+        text = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\ufffd]", "", text)
+        if text:
+            return text
+    # Fallback: naive decode (strips binary noise)
+    text = raw.decode("utf-8", errors="ignore")
     return " ".join(text.split())
 
 

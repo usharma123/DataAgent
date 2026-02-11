@@ -65,25 +65,33 @@ def _sync_gmail(svc: PersonalSyncService, *, full: bool) -> None:
 
 def _sync_imessage(svc: PersonalSyncService, *, full: bool) -> None:
     """Sync iMessage in batches until all messages are consumed."""
-    batch_size = 5000
+    batch_size = 20000
     os.environ["IMESSAGE_SYNC_LIMIT"] = str(batch_size)
 
     total_docs = 0
     total_chunks = 0
     batch_num = 0
+    prev_rowid = -1
 
     while True:
         batch_num += 1
         docs, chunks, msg = svc.sync_source(source="imessage", full=(full and batch_num == 1))
         total_docs += docs
         total_chunks += chunks
+
+        # Check cursor progress — stop when rowid stops advancing
+        source_row = svc._store.get_source("imessage")
+        cursor = (source_row or {}).get("cursor", {})
+        current_rowid = int((cursor if isinstance(cursor, dict) else {}).get("last_rowid", 0) or 0)
+
         logger.info(
-            "imessage batch %d: %d docs, %d chunks (total: %d docs, %d chunks)",
-            batch_num, docs, chunks, total_docs, total_chunks,
+            "imessage batch %d: %d docs, %d chunks (rowid=%d, total: %d docs, %d chunks)",
+            batch_num, docs, chunks, current_rowid, total_docs, total_chunks,
         )
-        # If we got fewer documents than the batch size, we've consumed everything
-        if docs < batch_size:
-            break
+
+        if current_rowid <= prev_rowid:
+            break  # No new rows consumed
+        prev_rowid = current_rowid
 
     logger.info("imessage: %d total docs, %d total chunks", total_docs, total_chunks)
 

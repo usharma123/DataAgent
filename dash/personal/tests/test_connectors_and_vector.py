@@ -45,7 +45,7 @@ class ConnectorsAndVectorTests(unittest.TestCase):
         self.assertIsNotNone(rows[0].get("embedding_json"))
 
     def test_local_vector_embeddings_present_for_documents(self) -> None:
-        encoder = LocalVectorEncoder(dimensions=64)
+        encoder = LocalVectorEncoder()
         docs, chunks = self.store.upsert_document(
             {
                 "doc_id": "files:1",
@@ -71,6 +71,33 @@ class ConnectorsAndVectorTests(unittest.TestCase):
         )
         self.assertGreaterEqual(len(results), 1)
         self.assertEqual(results[0].source, "files")
+
+    def test_retrieval_handles_typo_via_char_ngrams(self) -> None:
+        encoder = LocalVectorEncoder()
+        self.store.upsert_document(
+            {
+                "doc_id": "files:typo",
+                "source": "files",
+                "external_id": "/tmp/typo.txt",
+                "title": "weekly metrics",
+                "body_text": "launch quality metrics improved after rollout",
+                "metadata": {},
+            },
+            ["launch quality metrics improved after rollout"],
+            [encoder.encode("launch quality metrics improved after rollout")],
+        )
+
+        retriever = PersonalRetriever(self.store)
+        results = retriever.retrieve(
+            question="quality metrcs rollout",
+            source_filters=["files"],
+            time_from=None,
+            time_to=None,
+            top_k=5,
+        )
+
+        self.assertGreaterEqual(len(results), 1)
+        self.assertIn("metrics improved", results[0].text)
 
     def test_feedback_generates_source_specific_memory_templates(self) -> None:
         reflection = PersonalReflectionEngine()

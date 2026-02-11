@@ -7,7 +7,7 @@ from os import getenv
 from pathlib import Path
 
 from dash.personal.connectors.base import BaseConnector, SyncResult
-from dash.personal.ingest import ingest_document
+from dash.personal.ingest import bulk_ingest
 from dash.personal.store import PersonalStore
 from dash.personal.vector import LocalVectorEncoder
 
@@ -97,6 +97,24 @@ class FilesConnector(BaseConnector):
         files_skipped = 0
         max_mtime = last_mtime
 
+        batch: list[tuple[dict, str]] = []
+        batch_max_mtime = last_mtime
+        flush_size = 1000
+
+        def _flush_batch() -> None:
+            nonlocal documents, chunks, batch, batch_max_mtime, max_mtime
+            if not batch:
+                return
+            try:
+                d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+                documents += d
+                chunks += c
+                max_mtime = max(max_mtime, batch_max_mtime)
+            except Exception:
+                logger.warning("Failed to bulk ingest batch of %d files", len(batch), exc_info=True)
+            batch = []
+            batch_max_mtime = max_mtime
+
         for root in scan_roots:
             if not root.exists():
                 continue
@@ -130,37 +148,34 @@ class FilesConnector(BaseConnector):
                 checksum = hashlib.sha256(text.encode("utf-8", errors="ignore")).hexdigest()
                 doc_id = f"files:{checksum[:32]}"
 
-                try:
-                    created_docs, created_chunks = ingest_document(
-                        store=self._store,
-                        encoder=self._encoder,
-                        payload={
-                            "doc_id": doc_id,
-                            "source": self.source,
-                            "external_id": str(path),
-                            "thread_id": str(path.parent),
-                            "account_id": "local",
-                            "title": path.name,
-                            "author": None,
-                            "participants": [],
-                            "timestamp_utc": datetime.fromtimestamp(stat.st_mtime, tz=UTC),
-                            "deep_link": f"file://{path}",
-                            "metadata": {
-                                "path": str(path),
-                                "size": stat.st_size,
-                                "suffix": path.suffix.lower(),
-                                "category": "code" if path.suffix.lower() in _CODE_SUFFIXES else "document",
-                            },
-                            "checksum": checksum,
+                batch.append((
+                    {
+                        "doc_id": doc_id,
+                        "source": self.source,
+                        "external_id": str(path),
+                        "thread_id": str(path.parent),
+                        "account_id": "local",
+                        "title": path.name,
+                        "author": None,
+                        "participants": [],
+                        "timestamp_utc": datetime.fromtimestamp(stat.st_mtime, tz=UTC),
+                        "deep_link": f"file://{path}",
+                        "metadata": {
+                            "path": str(path),
+                            "size": stat.st_size,
+                            "suffix": path.suffix.lower(),
+                            "category": "code" if path.suffix.lower() in _CODE_SUFFIXES else "document",
                         },
-                        body_text=text,
-                    )
-                    documents += created_docs
-                    chunks += created_chunks
-                    max_mtime = max(max_mtime, stat.st_mtime)
-                except Exception:
-                    logger.warning("Failed to ingest %s", path, exc_info=True)
-                    files_skipped += 1
+                        "checksum": checksum,
+                    },
+                    text,
+                ))
+                batch_max_mtime = max(batch_max_mtime, stat.st_mtime)
+
+                if len(batch) >= flush_size:
+                    _flush_batch()
+
+        _flush_batch()
 
         next_cursor = {
             **self._cursor,
@@ -232,13 +247,21 @@ def _read_file_text(path: Path) -> str:
 
 
 def _read_pdf(path: Path) -> str:
-    """Best-effort PDF text extraction."""
+    """Extract text from PDF using pymupdf."""
     try:
-        raw = path.read_bytes()
-        # Simple text extraction from PDF stream objects
-        text = raw.decode("latin-1", errors="ignore")
-        return text
-    except OSError:
+        import pymupdf
+    except ImportError:
+        return ""
+    try:
+        doc = pymupdf.open(str(path))
+        parts: list[str] = []
+        for page in doc:
+            page_text = page.get_text()
+            if page_text.strip():
+                parts.append(page_text.strip())
+        doc.close()
+        return "\n\n".join(parts)
+    except Exception:
         return ""
 
 
