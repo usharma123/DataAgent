@@ -1,55 +1,65 @@
 services:
-  dash-db:
-    image: agnohq/pgvector:18
-    container_name: dash-db
+  vault-db:
+    image: pgvector/pgvector:pg17
+    container_name: vault-db
     restart: unless-stopped
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql
+      - pgdata:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${DB_USER:-ai}
       POSTGRES_PASSWORD: ${DB_PASS:-ai}
       POSTGRES_DB: ${DB_DATABASE:-ai}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-ai}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     networks:
-      - dash
+      - vault
 
-  dash-api:
-    container_name: dash-api
+  vault-api:
+    container_name: vault-api
     build:
       context: .
       dockerfile: Dockerfile
-    image: ${IMAGE_NAME:-dash}:${IMAGE_TAG:-latest}
+    image: ${IMAGE_NAME:-vault}:${IMAGE_TAG:-latest}
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     restart: unless-stopped
     ports:
       - "8000:8000"
     volumes:
       - .:/app
-      - dash-data:/data
+      - vault-data:/data
     environment:
       DATA_DIR: /data
       RUNTIME_ENV: dev
-      AGNO_DEBUG: "True"
-      DB_HOST: dash-db
+      DB_HOST: vault-db
       DB_PORT: 5432
       DB_USER: ${DB_USER:-ai}
       DB_PASS: ${DB_PASS:-ai}
       DB_DATABASE: ${DB_DATABASE:-ai}
       WAIT_FOR_DB: "True"
-      PRINT_ENV_ON_LOAD: "True"
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       EXA_API_KEY: ${EXA_API_KEY:-}
+      GMAIL_ACCESS_TOKEN: ${GMAIL_ACCESS_TOKEN:-}
+      GMAIL_CLIENT_ID: ${GMAIL_CLIENT_ID:-}
+      GMAIL_CLIENT_SECRET: ${GMAIL_CLIENT_SECRET:-}
+      GMAIL_REFRESH_TOKEN: ${GMAIL_REFRESH_TOKEN:-}
+      SLACK_USER_TOKEN: ${SLACK_USER_TOKEN:-}
+      SLACK_CONVERSATIONS: ${SLACK_CONVERSATIONS:-}
     depends_on:
-      - dash-db
+      vault-db:
+        condition: service_healthy
     networks:
-      - dash
+      - vault
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
 networks:
-  dash:
+  vault:
 
 volumes:
   pgdata:
-  dash-data:
+  vault-data:

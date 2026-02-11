@@ -1,5 +1,5 @@
 """
-Dash Evaluation Suite.
+Vault Evaluation Suite.
 
 Usage:
     python -m dash.evals.run_evals              # String matching (default)

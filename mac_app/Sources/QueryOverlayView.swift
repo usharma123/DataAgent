@@ -35,7 +35,7 @@ struct QueryOverlayView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Dash Personal Agent")
+            Text("Vault Personal Agent")
                 .font(.headline)
 
             TextField("Ask your data...", text: $model.query)

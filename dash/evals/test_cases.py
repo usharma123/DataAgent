@@ -1,5 +1,5 @@
 """
-Test cases for evaluating Dash.
+Test cases for evaluating Vault.
 
 Each test case includes:
 - question: The natural language question to ask
@@ -17,7 +17,7 @@ from dataclasses import dataclass
 
 @dataclass
 class TestCase:
-    """A test case for evaluating Dash."""
+    """A test case for evaluating Vault."""
 
     question: str
     expected_strings: list[str]

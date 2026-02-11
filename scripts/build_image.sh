@@ -2,7 +2,7 @@
 
 ############################################################################
 #
-#    Agno Docker Image Builder
+#    Vault Docker Image Builder
 #
 #    Usage: ./scripts/build_image.sh
 #
@@ -17,7 +17,7 @@ set -e
 CURR_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OS_ROOT="$(dirname "${CURR_DIR}")"
 DOCKER_FILE="Dockerfile"
-IMAGE_NAME="dash"
+IMAGE_NAME="vault"
 IMAGE_TAG="latest"
 
 # Colors

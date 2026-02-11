@@ -1,5 +1,5 @@
 """
-LLM-based grader for evaluating Dash responses.
+LLM-based grader for evaluating Vault responses.
 
 Uses a small, fast model to evaluate if the agent's response correctly
 answers the user's question given the expected results.

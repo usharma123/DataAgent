@@ -1,6 +1,5 @@
-FROM agnohq/python:3.12
+FROM python:3.12-slim
 
-# Environment variables that actually matter
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONPATH=/app \
@@ -10,6 +9,11 @@ ENV PYTHONUNBUFFERED=1 \
 ARG USER=app
 ARG APP_DIR=/app
 ARG DATA_DIR=/data
+
+# System deps for psycopg and wait-for-it
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev gcc netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create user
 RUN groupadd -g 61000 ${USER} \

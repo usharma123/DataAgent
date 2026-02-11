@@ -1,5 +1,5 @@
 """
-Run evaluations against Dash.
+Run evaluations against Vault.
 
 Usage:
     python -m dash.evals.run_evals
@@ -384,7 +384,7 @@ def display_summary(results: list[EvalResult], total_duration: float, category: 
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run Dash evaluations")
+    parser = argparse.ArgumentParser(description="Run Vault evaluations")
     parser.add_argument("--category", "-c", choices=CATEGORIES, help="Filter by category")
     parser.add_argument("--verbose", "-v", action="store_true", help="Show full responses on failure")
     parser.add_argument(

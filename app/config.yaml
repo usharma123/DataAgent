@@ -1,10 +1,10 @@
 chat:
   quick_prompts:
-    dash:
+    vault:
       - "Tell me about yourself"
       - "Who won the most races in 2019?"
       - "Who won the most F1 World Championships?"
-    reasoning-dash:
+    reasoning-vault:
       - "Tell me about yourself"
       - "Who won the most races in 2019?"
       - "Who won the most F1 World Championships?"

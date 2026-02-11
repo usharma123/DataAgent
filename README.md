@@ -1,338 +1,276 @@
-# Dash
+# Vault
 
-Dash is a **self-learning data agent** that grounds its answers in **6 layers of context** and improves with every run.
+A **self-learning personal data agent** that lives on your machine. It indexes your iMessages, Gmail, and local files, then answers questions with cited evidence — improving automatically with every interaction.
 
 Inspired by [OpenAI's in-house data agent](https://openai.com/index/inside-our-in-house-data-agent/).
+
+## What It Does
+
+- **Ask questions** across your iMessages, emails, and files in natural language
+- **SQL data agent** for structured database queries with insight generation
+- **Auto-indexes** new and modified files in real-time via file watcher
+- **Self-learning memory** — learns from feedback, never repeats the same mistakes
+- **Fully local** — your data never leaves your machine
 
 ## Quick Start
 
 ```sh
-# Clone this repo
-git clone https://github.com/agno-agi/dash.git && cd dash
-# Add OPENAI_API_KEY by adding to .env file or export OPENAI_API_KEY=sk-***
-cp example.env .env
+# 1. Clone and configure
+git clone <repo-url> && cd vault
+cp .env.example .env   # Add your API keys
 
-# Start the application
+# 2. Start everything
 docker compose up -d --build
 
-# Load sample data and knowledge
-docker exec -it dash-api python -m dash.scripts.load_data
-docker exec -it dash-api python -m dash.scripts.load_knowledge
+# 3. Verify
+curl http://localhost:8000/health
 ```
 
-Confirm dash is running by navigation to [http://localhost:8000/docs](http://localhost:8000/docs).
+Open [http://localhost:8000/docs](http://localhost:8000/docs) to explore the API.
 
-## Packaging Strategy
+## Architecture
 
-Dash now supports both:
+### Overall Agent Flow
 
-- **Poetry** for Python dependency/package management (`pyproject.toml`)
-- **Docker** for a reproducible runtime/deployment container
+```mermaid
+flowchart TD
+    U[User / API Client] --> A[FastAPI App<br/>app/main.py]
+    A --> R{Route}
+    R -->|/native/v1/ask| NQ[SQL Runtime<br/>dash/native/orchestrator.py]
+    R -->|/personal/ask| PQ[Personal Runtime<br/>dash/personal/orchestrator.py]
 
-Use Poetry for local packaging and CLI workflows, and Docker/Compose for runtime parity.
+    subgraph Ingestion["Personal Data Ingestion"]
+        IM[iMessage Connector]
+        GM[Gmail Connector]
+        SL[Slack Connector]
+        FL[File Connector + Watcher]
+        IM --> IN[Ingest + Chunk + Embed]
+        GM --> IN
+        SL --> IN
+        FL --> IN
+        IN --> V[(pgvector / Vector Store)]
+    end
 
-## Connect to the Web UI
+    subgraph PersonalPath["Personal QA Path"]
+        PQ --> PR[Retrieve Relevant Chunks]
+        PR --> V
+        PR --> PLLM[LLM Answer + Citations<br/>dash/llm.py]
+        PLLM --> POUT[Grounded Personal Answer]
+    end
 
-1. Open [os.agno.com](https://os.agno.com) and login
-2. Add OS → Local → `http://localhost:8000`
-3. Click "Connect"
+    subgraph SQLPath["SQL Insight Path"]
+        NQ --> CTX[Semantic Model + Business Rules + Saved Queries]
+        CTX --> DRAFT[LLM SQL Draft<br/>dash/native/sql_drafter.py]
+        DRAFT --> EXEC[(PostgreSQL)]
+        EXEC --> INS[LLM Insight Generation<br/>dash/native/insights.py]
+        INS --> NOUT[SQL + Insight Response]
+    end
 
-**Try it** (sample F1 dataset):
-
-- Who won the most F1 World Championships?
-- How many races has Lewis Hamilton won?
-- Compare Ferrari vs Mercedes points 2015-2020
-
-## Why Text-to-SQL Breaks in Practice
-
-Our goal is simple: ask a question in english, get a correct, meaningful answer. But raw LLMs writing SQL hit a wall fast:
-
-- **Schemas lack meaning.**
-- **Types are misleading.**
-- **Tribal knowledge is missing.**
-- **No way to learn from mistakes.**
-- **Results generally lack interpretation.**
-
-The root cause is missing context and missing memory.
-
-Dash solves this with **6 layers of grounded context**, a **self-learning loop** that improves with every query, and a focus on **understanding your question** to deliver insights you can act on.
-
-## The Six Layers of Context
-
-| Layer | Purpose | Source |
-|------|--------|--------|
-| **Table Usage** | Schema, columns, relationships | `knowledge/tables/*.json` |
-| **Human Annotations** | Metrics, definitions, and business rules | `knowledge/business/*.json` |
-| **Query Patterns** | SQL that is known to work | `knowledge/queries/*.sql` |
-| **Institutional Knowledge** | Docs, wikis, external references | MCP (optional) |
-| **Learnings** | Error patterns and discovered fixes | Agno `Learning Machine` |
-| **Runtime Context** | Live schema changes | `introspect_schema` tool |
-
-The agent retrieves relevant context at query time via hybrid search, then generates SQL grounded in patterns that already work.
-
-## The Self-Learning Loop
-
-Dash improves without retraining or fine-tuning. We call this gpu-poor continuous learning.
-
-It learns through two complementary systems:
-
-| System | Stores | How It Evolves |
-|------|--------|----------------|
-| **Knowledge** | Validated queries and business context | Curated by you + dash |
-| **Learnings** | Error patterns and fixes | Managed by `Learning Machine` automatically |
-
-```
-User Question
-     ↓
-Retrieve Knowledge + Learnings
-     ↓
-Reason about intent
-     ↓
-Generate grounded SQL
-     ↓
-Execute and interpret
-     ↓
- ┌────┴────┐
- ↓         ↓
-Success    Error
- ↓         ↓
- ↓         Diagnose → Fix → Save Learning
- ↓                           (never repeated)
- ↓
-Return insight
- ↓
-Optionally save as Knowledge
+    POUT --> FB[User Feedback]
+    NOUT --> FB
+    FB --> LEARN[Learning + Reflection]
+    LEARN --> MEM[Memory Candidates / Active Memory]
+    LEARN --> KNO[Knowledge Updates]
+    MEM -.applied on future runs.-> PQ
+    KNO -.applied on future runs.-> NQ
 ```
 
-**Knowledge** is curated—validated queries and business context you want the agent to build on.
+The API routes into one of two runtimes (personal QA or SQL insight), each grounded in stored context, with feedback feeding a learning loop that improves future responses.
 
-**Learnings** is discovered—patterns the agent finds through trial and error. When a query fails because `position` is TEXT not INTEGER, the agent saves that gotcha. Next time, it knows.
+```
+vault/
+├── native/              # SQL data agent runtime
+│   ├── orchestrator.py  # Query → SQL → Execute → Insight pipeline
+│   ├── sql_drafter.py   # LLM-powered SQL generation
+│   ├── insights.py      # LLM-powered result interpretation
+│   └── store.py         # Run telemetry and learning persistence
+├── personal/            # Personal data agent runtime
+│   ├── orchestrator.py  # Question → Retrieve → Cite → Answer
+│   ├── memory.py        # Memory lifecycle (proposed→approved→active→stale→deprecated)
+│   ├── learning.py      # Reflection engine (auto-generates memory candidates)
+│   ├── watcher.py       # Real-time file watcher (macOS FSEvents)
+│   └── connectors/      # Data source connectors
+│       ├── gmail.py     # Gmail (OAuth refresh token)
+│       ├── imessage.py  # iMessage (local SQLite)
+│       ├── files.py     # Local files (Documents, Desktop, Downloads, etc.)
+│       └── slack.py     # Slack (user token)
+├── llm.py               # Model-agnostic LLM calls (litellm)
+├── embedder.py          # Local embeddings (FastEmbed, BAAI/bge-small-en-v1.5)
+├── vectordb.py          # pgvector hybrid search (cosine + full-text)
+└── context/             # SQL context layers
+    ├── semantic_model.py
+    └── business_rules.py
 
-## Insights, Not Just Rows
+app/
+├── main.py              # FastAPI entry point + file watcher lifecycle
 
-Dash reasons about what makes an answer useful, not just technically correct.
+db/
+├── session.py           # PostgreSQL session factory (SQLAlchemy)
+└── url.py               # Database URL builder
+```
 
-**Question:**
-Who won the most races in 2019?
+**No agent framework.** Custom orchestration with FastAPI + litellm + fastembed. Model-agnostic — works with OpenAI, Anthropic, Ollama, or any litellm-compatible provider.
 
-| Typical SQL Agent | Dash |
-|------------------|------|
-| `Hamilton: 11` | Lewis Hamilton dominated 2019 with **11 wins out of 21 races**, more than double Bottas’s 4 wins. This performance secured his sixth world championship. |
+## Data Connectors
 
-## Deploy to Railway
+| Source | Auth | What It Reads |
+|--------|------|---------------|
+| **iMessage** | Full Disk Access (macOS) | All messages from `~/Library/Messages/chat.db` |
+| **Gmail** | OAuth refresh token | Emails via Gmail REST API |
+| **Files** | None (local) | Documents, code, PDFs, notebooks across `~/Documents`, `~/Desktop`, `~/Downloads`, etc. |
+| **Slack** | User token (`xoxp-`) | Channel and DM history |
+
+### File Watcher
+
+When the API server is running, new or modified files in your watched directories are **auto-indexed within 5 seconds**:
+
+```
+File saved → FSEvents → debounce (5s) → read → chunk → embed → pgvector
+```
+
+Supports 50+ file types: `.py`, `.js`, `.ts`, `.md`, `.pdf`, `.csv`, `.json`, `.sql`, `.ipynb`, `.docx`, `.xlsx`, and more. Skips binaries, media, `node_modules`, `.git`, and other junk automatically.
+
+## Connector Setup
+
+### iMessage (macOS)
+
+No configuration needed if your terminal has **Full Disk Access**:
+
+1. System Settings → Privacy & Security → Full Disk Access
+2. Enable your terminal app (Terminal.app, iTerm2, etc.)
+3. Vault reads `~/Library/Messages/chat.db` directly
+
+### Gmail
+
+1. Create a **Google Cloud project** and enable the Gmail API
+2. Create an **OAuth 2.0 Web Application** client
+3. Add `http://localhost:8085` as an authorized redirect URI
+4. Set credentials in `.env`:
 
 ```sh
-railway login
-
-./scripts/railway_up.sh
+GMAIL_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GMAIL_CLIENT_SECRET=GOCSPX-...
+GMAIL_REFRESH_TOKEN=1//...   # See scripts/gmail_auth.py
 ```
 
-### Production Operations
+### Local Files
 
-**Load data and knowledge:**
-```sh
-railway run python -m dash.scripts.load_data
-railway run python -m dash.scripts.load_knowledge
-```
-
-**View logs:**
+Auto-scans `~/Documents`, `~/Desktop`, `~/Downloads`, and other common directories. Override with:
 
 ```sh
-railway logs --service dash
+VAULT_FILES_SCAN_DIRS=Documents,Desktop,Downloads,Projects,Code
 ```
 
-**Run commands in production:**
+### Slack
+
+1. Create a Slack app at [api.slack.com/apps](https://api.slack.com/apps)
+2. Add User Token Scopes: `channels:history`, `channels:read`, `users:read`
+3. Install to workspace and copy the `xoxp-` token
+4. Set in `.env`:
 
 ```sh
-railway run python -m dash  # CLI mode
+SLACK_USER_TOKEN=xoxp-...
+SLACK_CONVERSATIONS=C12345,D12345
 ```
 
-**Redeploy after changes:**
+## Self-Learning System
 
-```sh
-railway up --service dash -d
-```
+Vault has two complementary learning systems:
 
-**Open dashboard:**
-```sh
-railway open
-```
+| System | What It Stores | How It Evolves |
+|--------|---------------|----------------|
+| **Knowledge** | Validated queries, table metadata, business rules | Curated by you + Vault |
+| **Memory** | Error patterns, user preferences, source quirks | Discovered automatically via reflection |
 
-## Adding Knowledge
-
-Dash works best when it understands how your organization talks about data.
+### Memory Lifecycle
 
 ```
-knowledge/
-├── tables/      # Table meaning and caveats
-├── queries/     # Proven SQL patterns
-└── business/    # Metrics and language
+Interaction → Reflection Engine → Memory Candidate (proposed)
+                                       ↓
+                              Review → Approve / Reject
+                                       ↓
+                              Active Memory (used in future queries)
+                                       ↓
+                              Stale → Deprecated (if contradicted)
 ```
 
-### Table Metadata
+Memory candidates are typed: `ReasoningRule`, `SourceQuirk`, `GuardrailException`, `UserPreference`.
 
-```
-{
-  "table_name": "orders",
-  "table_description": "Customer orders with denormalized line items",
-  "use_cases": ["Revenue reporting", "Customer analytics"],
-  "data_quality_notes": [
-    "created_at is UTC",
-    "status values: pending, completed, refunded",
-    "amount stored in cents"
-  ]
-}
-```
+## API Endpoints
 
-### Query Patterns
+### SQL Data Agent (`/native/v1`)
 
-```
--- <query name>monthly_revenue</query name>
--- <query description>
--- Monthly revenue calculation.
--- Converts cents to dollars.
--- Excludes refunded orders.
--- </query description>
--- <query>
-SELECT
-    DATE_TRUNC('month', created_at) AS month,
-    SUM(amount) / 100.0 AS revenue_dollars
-FROM orders
-WHERE status = 'completed'
-GROUP BY 1
-ORDER BY 1 DESC
--- </query>
-```
+| Endpoint | Description |
+|----------|-------------|
+| `POST /native/v1/ask` | Ask a data question → SQL → insight |
+| `POST /native/v1/feedback` | Submit feedback on a response |
+| `POST /native/v1/save-query` | Save a validated SQL query |
+| `POST /native/v1/evals/run` | Run evaluation suite |
 
-### Business Rules
+### Personal Data Agent (`/native/v1/personal`)
 
-```
-{
-  "metrics": [
-    {
-      "name": "MRR",
-      "definition": "Sum of active subscriptions excluding trials"
-    }
-  ],
-  "common_gotchas": [
-    {
-      "issue": "Revenue double counting",
-      "solution": "Filter to completed orders only"
-    }
-  ]
-}
-```
-
-### Load Knowledge
-
-```sh
-python -m dash.scripts.load_knowledge            # Upsert changes
-python -m dash.scripts.load_knowledge --recreate # Fresh start
-```
-
-## Local Development
-
-```sh
-./scripts/venv_setup.sh && source .venv/bin/activate
-docker compose up -d dash-db
-poetry run python -m dash.scripts.load_data
-poetry run python -m dash  # CLI mode
-```
+| Endpoint | Description |
+|----------|-------------|
+| `POST /personal/ask` | Ask across personal data sources |
+| `GET /personal/sources/status` | List connector status |
+| `POST /personal/sources/{source}/sync` | Trigger source sync |
+| `GET /personal/watcher/status` | File watcher status |
+| `GET /personal/memory/candidates` | List memory candidates |
+| `POST /personal/memory/candidates/{id}/approve` | Approve memory |
+| `GET /personal/memory/active` | List active memories |
+| `POST /personal/feedback` | Submit feedback + generate memory candidates |
 
 ## Environment Variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `OPENAI_API_KEY` | Yes | OpenAI API key |
-| `EXA_API_KEY` | No | Web search for external knowledge |
-| `DB_*` | No | Database config (defaults to localhost) |
-| `DASH_ENGINE` | No | `agno` (default) or `native` |
-| `DASH_NATIVE_DB_URL` | No | Optional DB URL override for native runtime |
-| `DASH_PERSONAL_DB_URL` | No | Optional DB URL override for personal runtime |
-| `DASH_PERSONAL_VECTOR_DIM` | No | Local embedding vector dimension for personal retrieval |
-| `DASH_SQL_DEFAULT_LIMIT` | No | Default LIMIT applied when omitted |
-| `DASH_SQL_MAX_LIMIT` | No | Hard cap for requested LIMIT |
-| `DASH_SQL_TIMEOUT_MS` | No | Statement timeout for SQL execution |
-| `DASH_MAX_SQL_ATTEMPTS` | No | Max SQL attempts allowed per ask request |
+| `OPENAI_API_KEY` | Yes* | OpenAI API key |
+| `ANTHROPIC_API_KEY` | Yes* | Anthropic API key |
+| `VAULT_LLM_MODEL` | No | LLM model (default: `gpt-4o`, any litellm-compatible) |
+| `VAULT_EMBED_BACKEND` | No | `local` (default, free) or `openai` |
+| `GMAIL_CLIENT_ID` | No | Gmail OAuth client ID |
+| `GMAIL_CLIENT_SECRET` | No | Gmail OAuth client secret |
+| `GMAIL_REFRESH_TOKEN` | No | Gmail OAuth refresh token |
+| `SLACK_USER_TOKEN` | No | Slack user token |
+| `IMESSAGE_DB_PATH` | No | iMessage DB path (default: `~/Library/Messages/chat.db`) |
+| `VAULT_FILES_SCAN_DIRS` | No | Comma-separated dirs to watch/scan |
+| `VAULT_FILES_MAX_SIZE` | No | Max file size to index (default: 10MB) |
+| `VAULT_WATCHER_DEBOUNCE` | No | Seconds to wait before indexing (default: 5) |
 
-## Native API Contracts (Step 6)
+*At least one LLM API key required.
 
-The repository now exposes a non-Agno native API surface under:
-
-`/native/v1`
-
-Current endpoints:
-
-- `GET /native/v1/health`
-- `POST /native/v1/ask`
-- `POST /native/v1/feedback`
-- `POST /native/v1/save-query`
-- `POST /native/v1/evals/run`
-
-Current native scope:
-
-- Contract + guardrail enforcement
-- Local knowledge retrieval + SQL drafting from known query patterns
-- Safe SQL execution with timeout and normalized LIMIT policy
-- Multi-attempt behavior (drafted query, then safe fallback query if needed)
-- Insight synthesis + row payloads in `POST /native/v1/ask`
-- Persistent run telemetry tables:
-  - `query_runs`
-  - `sql_attempts`
-  - `feedback_events`
-  - `learning_candidates`
-  - `validated_queries`
-  - `eval_runs`
-- Feedback ingestion and automatic learning candidate creation
-- Validated query persistence via `POST /native/v1/save-query`
-- Native eval execution and persisted run summary via `POST /native/v1/evals/run`
-
-To boot only native routes (without AgentOS), set:
+## Local Development
 
 ```sh
-export DASH_ENGINE=native
+# Set up virtual environment
+./scripts/venv_setup.sh && source .venv/bin/activate
+
+# Start just the database
+docker compose up -d vault-db
+
+# Load sample data and knowledge
+python -m vault.scripts.load_data
+python -m vault.scripts.load_knowledge
+
+# Run CLI
+python -m vault
+
+# Run API server
+uvicorn app.main:app --reload
 ```
 
-Optional: use a different DB URL for native mode.
+## Tech Stack
 
-```sh
-export DASH_NATIVE_DB_URL=sqlite+pysqlite:///./native_dash.db
-```
-
-## Personal Data Agent API (Memory + Citations)
-
-The repository now also exposes personal-data endpoints under:
-
-`/native/v1/personal`
-
-Current endpoints:
-
-- `POST /native/v1/personal/ask`
-- `GET /native/v1/personal/sources/status`
-- `POST /native/v1/personal/sources/{source}/connect`
-- `POST /native/v1/personal/sources/{source}/sync`
-- `POST /native/v1/personal/files/allowlist`
-- `GET /native/v1/personal/citations/{citation_id}`
-- `POST /native/v1/personal/feedback`
-- `GET /native/v1/personal/memory/candidates`
-- `POST /native/v1/personal/memory/candidates/{id}/approve`
-- `POST /native/v1/personal/memory/candidates/{id}/reject`
-- `GET /native/v1/personal/memory/active`
-- `POST /native/v1/personal/memory/{id}/deprecate`
-- `GET /native/v1/personal/evals/memory`
-
-Default personal runtime database:
-
-```sh
-export DASH_PERSONAL_DB_URL=sqlite+pysqlite:///./personal_dash.db
-```
-
-Personal retrieval embeddings are generated and stored locally in SQLite (`personal_chunks.embedding_json`),
-with hybrid lexical + vector ranking at query time.
+| Component | Technology |
+|-----------|-----------|
+| LLM | litellm (OpenAI, Anthropic, Ollama, etc.) |
+| Embeddings | FastEmbed (BAAI/bge-small-en-v1.5, local, free) |
+| Vector DB | pgvector (Postgres extension) |
+| API | FastAPI |
+| Database | PostgreSQL 17 + SQLAlchemy |
+| File Watch | watchdog (macOS FSEvents) |
+| Containers | Docker Compose |
 
 ## Further Reading
 
 - [OpenAI's In-House Data Agent](https://openai.com/index/inside-our-in-house-data-agent/) — the inspiration
-- [Self-Improving SQL Agent](https://www.ashpreetbedi.com/articles/sql-agent) — deep dive on an earlier architecture
-- [Agno Docs](https://docs.agno.com)
-- [Discord](https://agno.com/discord)
