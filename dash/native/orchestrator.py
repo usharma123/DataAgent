@@ -29,7 +29,7 @@ class NativeOrchestrator:
         self._retriever = retriever
         self._sql_drafter = sql_drafter
 
-    def run_ask(self, payload: AskRequest) -> AskResponse:
+    def run_ask(self, payload: AskRequest, memory_hints: list[str] | None = None) -> AskResponse:
         """Persist an ask run, draft SQL, execute, and return tracked metadata."""
         run_id = str(uuid4())
         try:
@@ -53,7 +53,7 @@ class NativeOrchestrator:
         rows: list[dict[str, object]] = []
         try:
             contexts = self._retriever.retrieve(payload.question)
-            draft = self._sql_drafter.draft(payload.question, contexts)
+            draft = self._sql_drafter.draft(payload.question, contexts, memory_hints=memory_hints)
             primary_sql = validate_and_normalize_sql(draft.sql)
             sql_candidates = [primary_sql]
             if payload.max_sql_attempts > 1:

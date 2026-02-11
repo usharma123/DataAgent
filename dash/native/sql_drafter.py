@@ -42,8 +42,13 @@ class SqlDraft:
 class SqlDrafter:
     """Drafts SQL using LLM with pattern context, falls back to pattern matching."""
 
-    def draft(self, question: str, contexts: list[RetrievedContext]) -> SqlDraft:
-        """Draft SQL using LLM informed by retrieved patterns."""
+    def draft(
+        self,
+        question: str,
+        contexts: list[RetrievedContext],
+        memory_hints: list[str] | None = None,
+    ) -> SqlDraft:
+        """Draft SQL using LLM informed by retrieved patterns and memory hints."""
         # Gather any matching patterns for context
         pattern_context = ""
         for item in contexts:
@@ -57,6 +62,8 @@ class SqlDrafter:
         user_prompt = f"Question: {question}"
         if pattern_context:
             user_prompt += f"\n\nRelevant query patterns for reference:{pattern_context}"
+        if memory_hints:
+            user_prompt += "\n\nPrevious learnings:\n" + "\n".join(f"- {h}" for h in memory_hints)
 
         try:
             response = complete(

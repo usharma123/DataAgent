@@ -18,6 +18,7 @@ from fastapi import FastAPI
 
 from dash.native import native_router
 from dash.personal import personal_router
+from dash.router import vault_router
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +53,7 @@ app = FastAPI(
 
 app.include_router(native_router)
 app.include_router(personal_router)
+app.include_router(vault_router)
 
 
 @app.get("/health")

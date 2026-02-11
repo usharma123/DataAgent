@@ -1,27 +1,29 @@
 """CLI entry point: python -m vault
 
-Interactive CLI for Vault data agent.
+Interactive CLI for Vault data agent — unified auto-routing.
 """
 
 from rich.console import Console
 from rich.markdown import Markdown
 
-from dash.native.contracts import AskRequest
-from dash.native.runtime import get_native_orchestrator
-from dash.personal.contracts import PersonalAskRequest
-from dash.personal.runtime import get_personal_orchestrator
+from dash.contracts import VaultAskRequest
+from dash.runtime import get_vault_orchestrator
 
 console = Console()
 
 
 def main() -> None:
     console.print("\n[bold cyan]Vault[/bold cyan] — self-learning data agent\n")
-    console.print("Commands: [dim]/sql[/dim] (data query) | [dim]/ask[/dim] (personal) | [dim]/quit[/dim]\n")
+    console.print(
+        "Auto-routes questions to SQL or personal data.\n"
+        "Override: [dim]/sql <query>[/dim] | [dim]/ask <query>[/dim] | [dim]/quit[/dim]\n"
+    )
 
-    mode = "personal"
+    orchestrator = get_vault_orchestrator()
+
     while True:
         try:
-            prompt = console.input(f"[bold]{'sql' if mode == 'sql' else 'ask'}>[/bold] ").strip()
+            prompt = console.input("[bold]vault>[/bold] ").strip()
         except (EOFError, KeyboardInterrupt):
             console.print("\n[dim]Goodbye.[/dim]")
             break
@@ -31,36 +33,37 @@ def main() -> None:
         if prompt in ("/quit", "/exit", "/q"):
             console.print("[dim]Goodbye.[/dim]")
             break
-        if prompt == "/sql":
-            mode = "sql"
-            console.print("[dim]Switched to SQL mode.[/dim]")
-            continue
-        if prompt == "/ask":
-            mode = "personal"
-            console.print("[dim]Switched to personal mode.[/dim]")
+
+        # Force-mode overrides
+        force_mode: str | None = None
+        if prompt.startswith("/sql "):
+            force_mode = "sql"
+            prompt = prompt[5:].strip()
+        elif prompt.startswith("/ask "):
+            force_mode = "personal"
+            prompt = prompt[5:].strip()
+
+        if not prompt:
             continue
 
-        if mode == "sql":
-            orchestrator = get_native_orchestrator()
-            result = orchestrator.run_ask(AskRequest(question=prompt))
-            if result.status == "success" and result.answer:
-                console.print(Markdown(result.answer))
-                if result.sql:
-                    console.print(f"\n[dim]SQL: {result.sql}[/dim]")
-            else:
-                console.print(f"[red]Error: {result.error}[/red]")
+        request = VaultAskRequest(question=prompt)
+        result = orchestrator.run_ask(request, force_mode=force_mode)
+
+        console.print(f"[dim]mode: {result.mode}[/dim]")
+
+        if result.status == "success" and result.answer:
+            console.print(Markdown(result.answer))
+            if result.sql:
+                console.print(f"\n[dim]SQL: {result.sql}[/dim]")
+            if result.citations:
+                console.print("\n[dim]Sources:[/dim]")
+                for c in result.citations[:3]:
+                    label = c.title or c.source
+                    console.print(f"  [dim]- {label}[/dim]")
+            if result.memory_used:
+                console.print(f"\n[dim]Memory applied: {len(result.memory_used)} item(s)[/dim]")
         else:
-            orchestrator = get_personal_orchestrator()
-            result = orchestrator.run_ask(PersonalAskRequest(question=prompt))
-            if result.status == "success" and result.answer:
-                console.print(Markdown(result.answer))
-                if result.citations:
-                    console.print("\n[dim]Sources:[/dim]")
-                    for c in result.citations[:3]:
-                        label = c.title or c.source
-                        console.print(f"  [dim]- {label}[/dim]")
-            else:
-                console.print(f"[red]Error: {result.error}[/red]")
+            console.print(f"[red]Error: {result.error}[/red]")
 
         console.print()
 

@@ -2,6 +2,8 @@
 
 from dataclasses import dataclass
 
+from dash.native.learning import _classify_sql_error, _suggest_fix
+
 
 @dataclass(frozen=True)
 class MemoryCandidateDraft:
@@ -96,6 +98,92 @@ class PersonalReflectionEngine:
                         metadata={"source": source, "trigger": "source_missing_evidence"},
                     )
                 )
+
+        return drafts
+
+    def from_sql_outcome(
+        self,
+        *,
+        run_id: str,
+        question: str,
+        sql: str | None,
+        rows: list[dict] | None,
+        error: str | None,
+        corrected_sql: str | None = None,
+    ) -> list[MemoryCandidateDraft]:
+        """Turn SQL run outcomes into memory candidates for the shared memory system."""
+        drafts: list[MemoryCandidateDraft] = []
+        synthetic_citation = [f"sql_run:{run_id}"]
+
+        if error:
+            category, confidence = _classify_sql_error(error)
+            fix = _suggest_fix(category)
+
+            if category == "schema_mismatch":
+                drafts.append(
+                    MemoryCandidateDraft(
+                        kind="SourceQuirk",
+                        scope="source-specific",
+                        title=f"SQL schema: {category}",
+                        learning=(
+                            f"Schema issue for question: {question}\n"
+                            f"Error: {error}\n"
+                            f"Fix: {fix}"
+                        ),
+                        confidence=confidence,
+                        evidence_citation_ids=synthetic_citation,
+                        metadata={"trigger": "sql_error", "category": category, "sql": (sql or "")[:500]},
+                    )
+                )
+            else:
+                drafts.append(
+                    MemoryCandidateDraft(
+                        kind="GuardrailException",
+                        scope="user-global",
+                        title=f"SQL error: {category}",
+                        learning=(
+                            f"When querying about: {question}\n"
+                            f"Avoid: {error}\n"
+                            f"Because: {fix}"
+                        ),
+                        confidence=confidence,
+                        evidence_citation_ids=synthetic_citation,
+                        metadata={"trigger": "sql_error", "category": category, "sql": (sql or "")[:500]},
+                    )
+                )
+
+        elif rows is not None and sql:
+            drafts.append(
+                MemoryCandidateDraft(
+                    kind="ReasoningRule",
+                    scope="user-global",
+                    title="successful SQL pattern",
+                    learning=(
+                        f"For questions about: {question}\n"
+                        f"This query pattern works: {sql[:500]}\n"
+                        f"Returned {len(rows)} row(s)."
+                    ),
+                    confidence=65,
+                    evidence_citation_ids=synthetic_citation,
+                    metadata={"trigger": "sql_success", "row_count": str(len(rows))},
+                )
+            )
+
+        if corrected_sql:
+            drafts.append(
+                MemoryCandidateDraft(
+                    kind="UserPreference",
+                    scope="user-global",
+                    title="user SQL correction",
+                    learning=(
+                        f"User prefers this SQL pattern for: {question}\n"
+                        f"Corrected SQL: {corrected_sql[:500]}"
+                    ),
+                    confidence=80,
+                    evidence_citation_ids=synthetic_citation,
+                    metadata={"trigger": "sql_correction"},
+                )
+            )
 
         return drafts
 
