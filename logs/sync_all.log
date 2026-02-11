@@ -1,0 +1,1541 @@
+12:53:24 [INFO] sync_all — Starting sync: sources=['gmail'] full=True
+12:53:24 [INFO] sync_all — ── gmail ──
+12:53:25 [INFO] sync_all — Starting sync: sources=['imessage'] full=True
+12:53:25 [INFO] sync_all — ── imessage ──
+12:53:26 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=384)
+12:53:26 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=384)
+12:53:26 [INFO] sync_all — Starting sync: sources=['files'] full=True
+12:53:26 [INFO] sync_all — ── files ──
+12:53:27 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=384)
+13:16:18 [INFO] sync_all — Starting sync: sources=['gmail'] full=True
+13:16:18 [INFO] sync_all — ── gmail ──
+13:16:18 [INFO] sync_all — Starting sync: sources=['imessage'] full=True
+13:16:18 [INFO] sync_all — ── imessage ──
+13:16:18 [INFO] sync_all — Starting sync: sources=['files'] full=True
+13:16:18 [INFO] sync_all — ── files ──
+13:16:19 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=1536)
+13:16:19 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=1536)
+13:16:19 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=1536)
+13:20:09 [INFO] sync_all — Starting sync: sources=['gmail'] full=True
+13:20:09 [INFO] sync_all — ── gmail ──
+13:20:09 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=1536)
+13:20:09 [INFO] sync_all — Starting sync: sources=['imessage'] full=True
+13:20:09 [INFO] sync_all — ── imessage ──
+13:20:09 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=1536)
+13:20:11 [INFO] sync_all — Starting sync: sources=['files'] full=True
+13:20:11 [INFO] sync_all — ── files ──
+13:20:13 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=1536)
+13:20:16 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 567235 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:20:17 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 561898 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:20:19 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 455045 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:20:22 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 586416 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:20:25 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 586836 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:20:27 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 535923 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:20:31 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 580480 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:20:34 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 584116 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:20:37 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 584407 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:20:40 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 581535 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:20:43 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 575314 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:20:46 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 575505 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:20:51 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 589424 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:20:53 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 584595 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:20:56 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 575813 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:20:59 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 590546 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:02 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 587757 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:05 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 593736 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:08 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 562729 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:10 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 582982 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:13 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 559289 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:15 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 576503 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:18 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 573711 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:20 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 567931 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:23 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 575455 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:25 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 582557 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:28 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 594144 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:30 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 583821 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:32 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 555615 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:35 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 564824 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:38 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 588364 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:40 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 581514 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:42 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 555173 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:44 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 574809 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:46 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 496547 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:48 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 481830 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:49 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 501727 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:51 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 524200 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:53 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 438243 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:55 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 549799 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:58 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 567327 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:21:59 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 823202 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:22:01 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 574518 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:22:03 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 555250 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:22:05 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 538441 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:22:06 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 547131 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:22:08 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 563707 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:22:10 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 554469 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:22:13 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 583302 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:22:14 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 524530 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:22:16 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 550215 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:22:18 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 588226 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:22:21 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 598896 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:22:25 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 593248 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:22:28 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 581623 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:22:30 [WARNING] dash.personal.connectors.files — Failed to bulk ingest batch of 1000 files
+Traceback (most recent call last):
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/connectors/files.py", line 109, in _flush_batch
+    d, c = bulk_ingest(store=self._store, encoder=self._encoder, items=batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/ingest.py", line 67, in bulk_ingest
+    all_vectors = encoder.encode_batch(all_chunk_texts) if all_chunk_texts else []
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/personal/vector.py", line 66, in encode_batch
+    return embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 38, in embed_batch
+    return _openai_embed_batch(texts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/scripts/../dash/embedder.py", line 88, in _openai_embed_batch
+    response = client.embeddings.create(model=model, input=batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/resources/embeddings.py", line 132, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1294, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/utsavsharma/Documents/GitHub/dash/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'Requested 585683 tokens, max 300000 tokens per request', 'type': 'max_tokens_per_request', 'param': None, 'code': 'max_tokens_per_request'}}
+13:24:08 [INFO] sync_all — Starting sync: sources=['files'] full=True
+13:24:08 [INFO] sync_all — ── files ──
+13:24:08 [INFO] sync_all — Starting sync: sources=['gmail'] full=True
+13:24:08 [INFO] sync_all — ── gmail ──
+13:24:08 [INFO] sync_all — Starting sync: sources=['imessage'] full=True
+13:24:08 [INFO] sync_all — ── imessage ──
+13:24:09 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=1536)
+13:24:09 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=1536)
+13:24:09 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=1536)
+13:24:23 [INFO] openai._base_client — Retrying request to /embeddings in 5.441000 seconds
+13:24:31 [INFO] openai._base_client — Retrying request to /embeddings in 12.424000 seconds
+13:24:44 [INFO] openai._base_client — Retrying request to /embeddings in 0.711000 seconds
+13:24:50 [INFO] openai._base_client — Retrying request to /embeddings in 5.799000 seconds
+13:24:56 [INFO] openai._base_client — Retrying request to /embeddings in 0.036000 seconds
+13:25:54 [INFO] openai._base_client — Retrying request to /embeddings in 5.516000 seconds
+13:26:00 [INFO] openai._base_client — Retrying request to /embeddings in 0.118000 seconds
+13:26:03 [INFO] openai._base_client — Retrying request to /embeddings in 12.311000 seconds
+13:26:19 [INFO] openai._base_client — Retrying request to /embeddings in 2.875000 seconds
+13:27:17 [INFO] openai._base_client — Retrying request to /embeddings in 7.510000 seconds
+13:27:25 [INFO] openai._base_client — Retrying request to /embeddings in 0.216000 seconds
+13:27:29 [INFO] openai._base_client — Retrying request to /embeddings in 11.757000 seconds
+13:27:41 [INFO] openai._base_client — Retrying request to /embeddings in 0.145000 seconds
+13:27:44 [INFO] openai._base_client — Retrying request to /embeddings in 12.682000 seconds
+13:27:57 [INFO] openai._base_client — Retrying request to /embeddings in 0.686000 seconds
+13:28:55 [INFO] openai._base_client — Retrying request to /embeddings in 6.064000 seconds
+13:29:00 [INFO] sync_all — imessage batch 1: 0 docs, 19972 chunks (rowid=20057, total: 0 docs, 19972 chunks)
+13:29:02 [INFO] openai._base_client — Retrying request to /embeddings in 0.064000 seconds
+13:29:05 [INFO] openai._base_client — Retrying request to /embeddings in 11.853000 seconds
+13:29:17 [INFO] openai._base_client — Retrying request to /embeddings in 0.523000 seconds
+13:29:20 [INFO] openai._base_client — Retrying request to /embeddings in 12.874000 seconds
+13:29:33 [INFO] openai._base_client — Retrying request to /embeddings in 0.804000 seconds
+13:29:37 [INFO] openai._base_client — Retrying request to /embeddings in 12.550000 seconds
+13:29:50 [INFO] openai._base_client — Retrying request to /embeddings in 0.431000 seconds
+13:29:53 [INFO] openai._base_client — Retrying request to /embeddings in 12.192000 seconds
+13:30:06 [INFO] openai._base_client — Retrying request to /embeddings in 0.866000 seconds
+13:30:12 [INFO] openai._base_client — Retrying request to /embeddings in 10.258000 seconds
+13:30:23 [INFO] openai._base_client — Retrying request to /embeddings in 0.570000 seconds
+13:30:27 [INFO] openai._base_client — Retrying request to /embeddings in 11.663000 seconds
+13:30:39 [INFO] openai._base_client — Retrying request to /embeddings in 0.116000 seconds
+13:30:41 [INFO] openai._base_client — Retrying request to /embeddings in 12.654000 seconds
+13:31:30 [INFO] sync_all — Starting sync: sources=['imessage'] full=True
+13:31:30 [INFO] sync_all — Starting sync: sources=['files'] full=True
+13:31:30 [INFO] sync_all — ── imessage ──
+13:31:30 [INFO] sync_all — ── files ──
+13:31:30 [INFO] sync_all — Starting sync: sources=['gmail'] full=True
+13:31:30 [INFO] sync_all — ── gmail ──
+13:31:31 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=1536)
+13:31:31 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=1536)
+13:31:31 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=1536)
+13:33:55 [INFO] sync_all — imessage batch 1: 0 docs, 19972 chunks (rowid=20057, total: 0 docs, 19972 chunks)
+13:35:18 [INFO] sync_all — imessage batch 2: 0 docs, 19984 chunks (rowid=40080, total: 0 docs, 39956 chunks)
+13:36:53 [INFO] sync_all — imessage batch 3: 0 docs, 19998 chunks (rowid=60088, total: 0 docs, 59954 chunks)
+13:38:20 [INFO] sync_all — imessage batch 4: 0 docs, 19996 chunks (rowid=80112, total: 0 docs, 79950 chunks)
+13:40:02 [INFO] sync_all — imessage batch 5: 0 docs, 19974 chunks (rowid=100127, total: 0 docs, 99924 chunks)
+13:41:31 [INFO] sync_all — imessage batch 6: 0 docs, 19973 chunks (rowid=120148, total: 0 docs, 119897 chunks)
+13:43:04 [INFO] sync_all — imessage batch 7: 0 docs, 20001 chunks (rowid=140174, total: 0 docs, 139898 chunks)
+13:44:48 [INFO] sync_all — imessage batch 8: 0 docs, 19984 chunks (rowid=160216, total: 0 docs, 159882 chunks)
+13:46:38 [INFO] sync_all — imessage batch 9: 0 docs, 19955 chunks (rowid=180352, total: 0 docs, 179837 chunks)

@@ -1,0 +1,3 @@
+13:31:30 [INFO] sync_all — Starting sync: sources=['files'] full=True
+13:31:30 [INFO] sync_all — ── files ──
+13:31:31 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=1536)

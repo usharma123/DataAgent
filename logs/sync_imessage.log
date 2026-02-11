@@ -1,0 +1,12 @@
+13:31:30 [INFO] sync_all — Starting sync: sources=['imessage'] full=True
+13:31:30 [INFO] sync_all — ── imessage ──
+13:31:31 [INFO] dash.personal.store — pgvector enabled for personal_chunks (dims=1536)
+13:33:55 [INFO] sync_all — imessage batch 1: 0 docs, 19972 chunks (rowid=20057, total: 0 docs, 19972 chunks)
+13:35:18 [INFO] sync_all — imessage batch 2: 0 docs, 19984 chunks (rowid=40080, total: 0 docs, 39956 chunks)
+13:36:53 [INFO] sync_all — imessage batch 3: 0 docs, 19998 chunks (rowid=60088, total: 0 docs, 59954 chunks)
+13:38:20 [INFO] sync_all — imessage batch 4: 0 docs, 19996 chunks (rowid=80112, total: 0 docs, 79950 chunks)
+13:40:02 [INFO] sync_all — imessage batch 5: 0 docs, 19974 chunks (rowid=100127, total: 0 docs, 99924 chunks)
+13:41:31 [INFO] sync_all — imessage batch 6: 0 docs, 19973 chunks (rowid=120148, total: 0 docs, 119897 chunks)
+13:43:04 [INFO] sync_all — imessage batch 7: 0 docs, 20001 chunks (rowid=140174, total: 0 docs, 139898 chunks)
+13:44:48 [INFO] sync_all — imessage batch 8: 0 docs, 19984 chunks (rowid=160216, total: 0 docs, 159882 chunks)
+13:46:38 [INFO] sync_all — imessage batch 9: 0 docs, 19955 chunks (rowid=180352, total: 0 docs, 179837 chunks)
