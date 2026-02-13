@@ -57,8 +57,12 @@ class PersonalOrchestrator:
             except PersonalStoreError:
                 memory_skipped = []
 
-            debug.memory_used = [f"{m['id']}:{m['kind']}" for m in memory_used]
-            debug.memory_skipped = [f"{m['id']}:{m['kind']}" for m in memory_skipped]
+            debug.memory_used = [
+                f"{m['id']}:{m['kind']}" for m in memory_used if "id" in m and "kind" in m
+            ]
+            debug.memory_skipped = [
+                f"{m['id']}:{m['kind']}" for m in memory_skipped if "id" in m and "kind" in m
+            ]
 
             retrieved = self._retriever.retrieve(
                 question=payload.question,

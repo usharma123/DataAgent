@@ -76,6 +76,28 @@ _MAX_FILE_SIZE = int(getenv("VAULT_FILES_MAX_SIZE", str(10 * 1024 * 1024)))
 _DEFAULT_SCAN_DIRS = "Documents,Desktop,Downloads,Projects,Code,GitHub,Developer,repos,src,work,notes"
 
 
+def resolve_scan_roots(store: PersonalStore) -> list[Path]:
+    """Determine which directories to scan (shared utility)."""
+    try:
+        allowlist = store.list_file_allowlist()
+        if allowlist:
+            return [Path(p).expanduser() for p in allowlist]
+    except Exception:
+        pass
+
+    home = Path.home()
+    dir_names = getenv("VAULT_FILES_SCAN_DIRS", _DEFAULT_SCAN_DIRS).split(",")
+    roots: list[Path] = []
+    for name in dir_names:
+        name = name.strip()
+        if not name:
+            continue
+        candidate = home / name
+        if candidate.exists() and candidate.is_dir():
+            roots.append(candidate)
+    return roots
+
+
 class FilesConnector(BaseConnector):
     """Scans home directory for useful documents and code, indexes into vector store."""
 
@@ -189,26 +211,7 @@ class FilesConnector(BaseConnector):
 
     def _resolve_scan_roots(self) -> list[Path]:
         """Determine which directories to scan."""
-        # Check for explicit allowlist first (backwards compatible)
-        try:
-            allowlist = self._store.list_file_allowlist()
-            if allowlist:
-                return [Path(p).expanduser() for p in allowlist]
-        except Exception:
-            pass
-
-        # Fall back to configured scan dirs under $HOME
-        home = Path.home()
-        dir_names = getenv("VAULT_FILES_SCAN_DIRS", _DEFAULT_SCAN_DIRS).split(",")
-        roots: list[Path] = []
-        for name in dir_names:
-            name = name.strip()
-            if not name:
-                continue
-            candidate = home / name
-            if candidate.exists() and candidate.is_dir():
-                roots.append(candidate)
-        return roots
+        return resolve_scan_roots(self._store)
 
 
 def _walk_filtered(root: Path):

@@ -38,6 +38,12 @@ _STOP_WORDS = {
     "show",
 }
 
+LEXICAL_WEIGHT = 0.55
+VECTOR_WEIGHT = 0.25
+DENSITY_WEIGHT = 0.15
+RECENCY_WEIGHT = 0.05
+RECENCY_HALFLIFE_DAYS = 30
+
 
 @dataclass(frozen=True)
 class RetrievedChunk:
@@ -162,10 +168,10 @@ class PersonalRetriever:
             lexical = overlap / max(1, len(question_tokens)) if overlap > 0 else 0.0
             density = overlap / max(1, len(chunk_tokens))
             score = (
-                (0.55 * lexical)
-                + (0.25 * max(0.0, vector_score))
-                + (0.15 * density)
-                + (0.05 * _recency_boost(row.get("timestamp_utc")))
+                (LEXICAL_WEIGHT * lexical)
+                + (VECTOR_WEIGHT * max(0.0, vector_score))
+                + (DENSITY_WEIGHT * density)
+                + (RECENCY_WEIGHT * _recency_boost(row.get("timestamp_utc")))
             )
             scored.append(
                 RetrievedChunk(
@@ -195,7 +201,7 @@ def _recency_boost(value: datetime | None) -> float:
     if value is None:
         return 0.0
     delta_days = abs((datetime.now(value.tzinfo) - value).days)
-    return math.exp(-(delta_days / 30))
+    return math.exp(-(delta_days / RECENCY_HALFLIFE_DAYS))
 
 
 def _parse_embedding(raw: object) -> list[float] | None:

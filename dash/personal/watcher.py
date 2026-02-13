@@ -6,7 +6,7 @@ import time
 from os import getenv
 from pathlib import Path
 
-from dash.personal.connectors.files import _SKIP_DIRS, _SUPPORTED_SUFFIXES
+from dash.personal.connectors.files import _SKIP_DIRS, _SUPPORTED_SUFFIXES, resolve_scan_roots
 from dash.personal.store import PersonalStore
 from dash.personal.vector import LocalVectorEncoder
 
@@ -15,9 +15,6 @@ logger = logging.getLogger(__name__)
 # How long to wait after a file change before indexing (seconds).
 # Groups rapid edits (e.g. save-save-save) into one indexing pass.
 _DEBOUNCE_SECONDS = float(getenv("VAULT_WATCHER_DEBOUNCE", "5"))
-
-# Default scan roots (same as FilesConnector)
-_DEFAULT_SCAN_DIRS = "Documents,Desktop,Downloads,Projects,Code,GitHub,Developer,repos,src,work,notes"
 
 
 class FileWatcher:
@@ -186,26 +183,7 @@ class FileWatcher:
 
     def _resolve_watch_roots(self) -> list[Path]:
         """Determine which directories to watch."""
-        # Check for explicit allowlist first
-        try:
-            allowlist = self._store.list_file_allowlist()
-            if allowlist:
-                return [Path(p).expanduser() for p in allowlist if Path(p).expanduser().is_dir()]
-        except Exception:
-            pass
-
-        # Fall back to configured scan dirs under $HOME
-        home = Path.home()
-        dir_names = getenv("VAULT_FILES_SCAN_DIRS", _DEFAULT_SCAN_DIRS).split(",")
-        roots: list[Path] = []
-        for name in dir_names:
-            name = name.strip()
-            if not name:
-                continue
-            candidate = home / name
-            if candidate.exists() and candidate.is_dir():
-                roots.append(candidate)
-        return roots
+        return resolve_scan_roots(self._store)
 
 
 # ── Singleton for app lifecycle ────────────────────────────────────────────────

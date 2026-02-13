@@ -1,6 +1,9 @@
 """Native orchestration skeleton for ask runs."""
 
+import logging
 from uuid import uuid4
+
+logger = logging.getLogger(__name__)
 
 from dash.native.contracts import AskRequest, AskResponse, SqlAttempt
 from dash.native.executor import SqlExecutionError, SqlExecutor
@@ -109,8 +112,8 @@ class NativeOrchestrator:
         except NativeRunStoreError as exc:
             try:
                 self._run_store.update_query_run(run_id=run_id, status="failed", error=str(exc))
-            except NativeRunStoreError:
-                pass
+            except NativeRunStoreError as store_exc:
+                logger.warning("Failed to update query run status: %s", store_exc)
             return AskResponse(
                 run_id=run_id,
                 status="failed",
@@ -119,12 +122,13 @@ class NativeOrchestrator:
         except SqlExecutionError as exc:
             try:
                 attempts = self._run_store.list_sql_attempts(run_id=run_id)
-            except NativeRunStoreError:
+            except NativeRunStoreError as store_exc:
+                logger.warning("Failed to list SQL attempts: %s", store_exc)
                 attempts = []
             try:
                 self._run_store.update_query_run(run_id=run_id, status="failed", error=str(exc))
-            except NativeRunStoreError:
-                pass
+            except NativeRunStoreError as store_exc:
+                logger.warning("Failed to update query run status: %s", store_exc)
             return AskResponse(
                 run_id=run_id,
                 status="failed",
@@ -146,16 +150,17 @@ class NativeOrchestrator:
         except SqlGuardrailError as exc:
             try:
                 self._run_store.log_sql_attempt(run_id=run_id, attempt_number=1, sql=draft.sql, error=str(exc))
-            except NativeRunStoreError:
-                pass
+            except NativeRunStoreError as store_exc:
+                logger.warning("Failed to log SQL attempt: %s", store_exc)
             try:
                 attempts = self._run_store.list_sql_attempts(run_id=run_id)
-            except NativeRunStoreError:
+            except NativeRunStoreError as store_exc:
+                logger.warning("Failed to list SQL attempts: %s", store_exc)
                 attempts = []
             try:
                 self._run_store.update_query_run(run_id=run_id, status="failed", error=str(exc))
-            except NativeRunStoreError:
-                pass
+            except NativeRunStoreError as store_exc:
+                logger.warning("Failed to update query run status: %s", store_exc)
             return AskResponse(
                 run_id=run_id,
                 status="failed",
@@ -177,8 +182,8 @@ class NativeOrchestrator:
         except Exception as exc:
             try:
                 self._run_store.update_query_run(run_id=run_id, status="failed", error=str(exc))
-            except NativeRunStoreError:
-                pass
+            except NativeRunStoreError as store_exc:
+                logger.warning("Failed to update query run status: %s", store_exc)
             return AskResponse(
                 run_id=run_id,
                 status="failed",
